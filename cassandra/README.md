@@ -14,13 +14,13 @@ In order to deploy Cassandra you just need to clone this repostiory and use
 kubectl to create the Kubernetes objects.
 
 ```bash
-$ git clone https://github.com/storageos/deploy.git storageos
-$ cd storageos
-$ kubectl create -f ./k8s/examples/cassandra
+$ git clone https://github.com/storageos/use-cases.git storageos-usecases
+$ cd storageos-usecases
+$ kubectl create -f ./cassandra/
 ```
 Once this is done you can check that three Cassandra pods are running. Because
 Cassandra is being deployed as a StatefulSet, pod cassandra-1 will only be
-created once cassandra-0 is ready. 
+created once cassandra-0 is ready.
 
 ```bash
 $ kubectl get pods -w -l app=cassandra
@@ -28,7 +28,6 @@ NAME          READY   STATUS    RESTARTS   AGE
 cassandra-0   1/1     Running   0          8m32s
 cassandra-1   1/1     Running   0          7m51s
 cassandra-2   1/1     Running   0          6m36s 
-
 ```
 
 Connect to a Cassandra pod and connect to the Cassandra server through the
