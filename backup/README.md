@@ -19,8 +19,8 @@ information](https://docs.storageos.com/docs/platforms/kubernetes/install/index.
 In order to deploy the examples, clone this repository and use kubectl to create the
 Kubernetes objects.
 ```bash
-$ git clone https://github.com/storageos/deploy.git storageos
-$ cd storageos
+$ git clone https://github.com/storageos/use-cases.git storageos-usecases
+$ cd storageos-usecases
 ```
 > Before deploying the backup-example stateful set we recommend looking
 > through the examples to understand how the different containers are
