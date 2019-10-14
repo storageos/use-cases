@@ -37,7 +37,7 @@ emulation need to be enabled. For ease of installation we have enabled hardware
 emulation.
 
 > If your VMs support nested virtualization then edit the Kubevirt `configMap`
-> `./kubevirt-install/10-cm.yam` , removing the line for more
+> `./kubevirt-install/10-cm.yaml` , removing the line for more
 > information.`debug.useEmulation: "true"`.
 
 ## Deploy
@@ -46,8 +46,8 @@ In order to deploy Kubevirt you just need to clone this repository and use
 kubectl to create the Kubernetes objects.
 
 ```bash
-$ git clone https://github.com/storageos/deploy.git storageos
-$ cd storageos/k8s/examples/kubevirt
+$ git clone https://github.com/storageos/use-cases.git storageos-usecases
+$ cd storageos-usecases/kubevirt
 $ kubectl create -f ./kubevirt-install
 ```
 Once this is done you can check that the Kubevirt pods are running.
@@ -135,7 +135,7 @@ volumes must have a `ReadWriteMany` AccessMode. StorageOS provides
 
 Create the migratable VirtualMachine and verify that the `VMI` is running
 ```bash
-$ kubectl create -f ./k8s/examples/kubevirt/migration/vm-cirros.yaml
+$ kubectl create -f ./kubevirt/migration/vm-cirros.yaml
 $ kubectl get vmi
 NAME     AGE   PHASE     IP            NODENAME
 cirros   1m    Running   10.244.4.12   ip-10-1-10-174.storageos.net
@@ -151,7 +151,7 @@ You can leave the console running and open a new terminal window, or leave the
 console, in order to create the VirtualMachineInstanceMigration.
 
 ```bash
-$ kubectl create -f ./k8s/examples/kubevirt/migration/migration-job.yaml
+$ kubectl create -f ./migration/migration-job.yaml
 ```
 
 ## Cloning Volumes
