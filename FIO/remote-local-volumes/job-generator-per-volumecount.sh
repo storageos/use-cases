@@ -20,9 +20,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-${pvc_prefix}-$v
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
@@ -39,6 +38,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: fio-${num_vols}vol
+  annotations:
+    storageos.com/scheduler: "false"
 spec:
   template:
     spec:
