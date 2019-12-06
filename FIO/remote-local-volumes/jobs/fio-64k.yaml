@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-7891-0
+spec:
+  storageClassName: fast
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: fast
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-7891-1
+spec:
+  storageClassName: fast
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: fast
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-7891-2
+spec:
+  storageClassName: fast
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: fast
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-7891-3
+spec:
+  storageClassName: fast
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: fast
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-64k
+  annotations:
+    storageos.com/scheduler: "false"
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fio
+        image: senax/docker-fio:latest
+        command:
+          - "fio"
+          - "/tmp/profile-64k.fio"
+        volumeMounts:
+          - name: fio-conf
+            mountPath: /tmp/
+          - name: vol0
+            mountPath: /mnt/pvc0
+          - name: vol1
+            mountPath: /mnt/pvc1
+          - name: vol2
+            mountPath: /mnt/pvc2
+          - name: vol3
+            mountPath: /mnt/pvc3
+        resources:
+          requests:
+            cpu: 500m
+      volumes:
+      - name: fio-conf
+        configMap:
+          name: fio-profiles
+      - name: vol0
+        persistentVolumeClaim:
+          claimName: pvc-7891-0
+      - name: vol1
+        persistentVolumeClaim:
+          claimName: pvc-7891-1
+      - name: vol2
+        persistentVolumeClaim:
+          claimName: pvc-7891-2
+      - name: vol3
+        persistentVolumeClaim:
+          claimName: pvc-7891-3

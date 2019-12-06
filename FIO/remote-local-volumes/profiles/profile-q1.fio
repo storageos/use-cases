@@ -10,8 +10,8 @@ rw=randrw
 rwmixread=60
 rwmixwrite=40
 percentage_random=85
-bs=4k
-iodepth=64
+bs=64k
+iodepth=1
 log_avg_msec=250
 group_reporting=1
 
@@ -26,15 +26,3 @@ filename=/mnt/pvc2/fio.dat
 
 [vol3]
 filename=/mnt/pvc3/fio.dat
-
-[vol4]
-filename=/mnt/pvc4/fio.dat
-
-[vol5]
-filename=/mnt/pvc5/fio.dat
-
-[vol6]
-filename=/mnt/pvc6/fio.dat
-
-[vol7]
-filename=/mnt/pvc7/fio.dat

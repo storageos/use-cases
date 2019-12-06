@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-5846-0
+  name: pvc-3214-0
 spec:
   storageClassName: fast
   accessModes:
@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-5846-1
+  name: pvc-3214-1
 spec:
   storageClassName: fast
   accessModes:
@@ -27,7 +27,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-5846-2
+  name: pvc-3214-2
 spec:
   storageClassName: fast
   accessModes:
@@ -40,7 +40,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-5846-3
+  name: pvc-3214-3
 spec:
   storageClassName: fast
   accessModes:
@@ -53,7 +53,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fio-4vol
+  name: fio-128k
   annotations:
     storageos.com/scheduler: "false"
 spec:
@@ -65,7 +65,7 @@ spec:
         image: senax/docker-fio:latest
         command:
           - "fio"
-          - "/tmp/profile-4vol.fio"
+          - "/tmp/profile-128k.fio"
         volumeMounts:
           - name: fio-conf
             mountPath: /tmp/
@@ -86,13 +86,13 @@ spec:
           name: fio-profiles
       - name: vol0
         persistentVolumeClaim:
-          claimName: pvc-5846-0
+          claimName: pvc-3214-0
       - name: vol1
         persistentVolumeClaim:
-          claimName: pvc-5846-1
+          claimName: pvc-3214-1
       - name: vol2
         persistentVolumeClaim:
-          claimName: pvc-5846-2
+          claimName: pvc-3214-2
       - name: vol3
         persistentVolumeClaim:
-          claimName: pvc-5846-3
+          claimName: pvc-3214-3

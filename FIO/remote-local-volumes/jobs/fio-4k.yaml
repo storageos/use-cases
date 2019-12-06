@@ -1,8 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-6450-0
+  name: pvc-9531-0
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
@@ -13,8 +14,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-6450-1
+  name: pvc-9531-1
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
@@ -25,8 +27,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-6450-2
+  name: pvc-9531-2
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
@@ -37,56 +40,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-6450-3
+  name: pvc-9531-3
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
   storageClassName: fast
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-6450-4
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: fast
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-6450-5
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: fast
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-6450-6
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: fast
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-6450-7
-spec:
   accessModes:
     - ReadWriteOnce
   resources:
@@ -97,7 +53,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fio-8vol
+  name: fio-4k
   annotations:
     storageos.com/scheduler: "false"
 spec:
@@ -109,7 +65,7 @@ spec:
         image: senax/docker-fio:latest
         command:
           - "fio"
-          - "/tmp/profile-8vol.fio"
+          - "/tmp/profile-4k.fio"
         volumeMounts:
           - name: fio-conf
             mountPath: /tmp/
@@ -121,14 +77,6 @@ spec:
             mountPath: /mnt/pvc2
           - name: vol3
             mountPath: /mnt/pvc3
-          - name: vol4
-            mountPath: /mnt/pvc4
-          - name: vol5
-            mountPath: /mnt/pvc5
-          - name: vol6
-            mountPath: /mnt/pvc6
-          - name: vol7
-            mountPath: /mnt/pvc7
         resources:
           requests:
             cpu: 500m
@@ -138,25 +86,13 @@ spec:
           name: fio-profiles
       - name: vol0
         persistentVolumeClaim:
-          claimName: pvc-6450-0
+          claimName: pvc-9531-0
       - name: vol1
         persistentVolumeClaim:
-          claimName: pvc-6450-1
+          claimName: pvc-9531-1
       - name: vol2
         persistentVolumeClaim:
-          claimName: pvc-6450-2
+          claimName: pvc-9531-2
       - name: vol3
         persistentVolumeClaim:
-          claimName: pvc-6450-3
-      - name: vol4
-        persistentVolumeClaim:
-          claimName: pvc-6450-4
-      - name: vol5
-        persistentVolumeClaim:
-          claimName: pvc-6450-5
-      - name: vol6
-        persistentVolumeClaim:
-          claimName: pvc-6450-6
-      - name: vol7
-        persistentVolumeClaim:
-          claimName: pvc-6450-7
+          claimName: pvc-9531-3
