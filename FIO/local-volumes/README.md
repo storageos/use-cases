@@ -56,7 +56,7 @@ injected into the Job.
 # Use StorageOS CLI to verify where the volumes are collocated
 
 # As a binary
-~$ storageos volume ls 
+~$ storageos volume ls
 
 # As a container
 ~$ kubectl -n storageos exec cli -- storageos volume ls

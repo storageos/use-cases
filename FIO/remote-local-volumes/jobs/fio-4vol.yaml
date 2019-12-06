@@ -2,58 +2,60 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-5846-0
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-5846-1
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-5846-2
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-5846-3
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: fio-4vol
+  annotations:
+    storageos.com/scheduler: "false"
 spec:
   template:
     spec:
