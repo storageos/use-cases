@@ -1,5 +1,8 @@
 # Create jobs
 
+> Since StorageOS 1.5.0, the `storageos-scheduler` is enabled by default, hence
+> the volumes will be co-located with the Pods.
+
 The volumes in this tests will be created without node selectors or hints,
 therefore some volumes may be local to the FIO Pod and some remote. To test
 using local volumes, look at the suggested tests in `../local-volumes/`.
