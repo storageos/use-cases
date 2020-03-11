@@ -1,4 +1,11 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubevirt.io: ""
+  name: kubevirt
+---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -179,16 +186,32 @@ rules:
   - admissionregistration.k8s.io
   resources:
   - validatingwebhookconfigurations
+  - mutatingwebhookconfigurations
   verbs:
   - get
   - list
   - watch
   - create
   - delete
+  - update
+  - patch
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update
+  - patch
 - apiGroups:
   - monitoring.coreos.com
   resources:
   - servicemonitors
+  - prometheusrules
   verbs:
   - get
   - list
@@ -205,6 +228,15 @@ rules:
   - virtualmachines/restart
   verbs:
   - put
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
 - apiGroups:
   - admissionregistration.k8s.io
   resources:
@@ -229,13 +261,24 @@ rules:
   verbs:
   - get
   - list
+  - delete
+  - patch
 - apiGroups:
   - kubevirt.io
   resources:
   - virtualmachines
   - virtualmachineinstances
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+- apiGroups:
+  - kubevirt.io
+  resources:
   - virtualmachineinstancemigrations
   verbs:
+  - create
   - get
   - list
   - watch
@@ -389,7 +432,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - secrets
   - persistentvolumeclaims
   verbs:
   - get
@@ -428,6 +470,7 @@ rules:
   - secrets
   verbs:
   - create
+  - get
 - apiGroups:
   - subresources.kubevirt.io
   resources:
@@ -440,6 +483,8 @@ rules:
   resources:
   - virtualmachineinstances/console
   - virtualmachineinstances/vnc
+  - virtualmachineinstances/pause
+  - virtualmachineinstances/unpause
   verbs:
   - get
 - apiGroups:
@@ -472,6 +517,8 @@ rules:
   resources:
   - virtualmachineinstances/console
   - virtualmachineinstances/vnc
+  - virtualmachineinstances/pause
+  - virtualmachineinstances/unpause
   verbs:
   - get
 - apiGroups:
@@ -572,27 +619,30 @@ spec:
         - "2"
         env:
         - name: OPERATOR_IMAGE
-          value: index.docker.io/kubevirt/virt-operator@sha256:0930c216340f483ff5afea129cfc9868d97020d2572af984ebbe3196e671abef
+          value: index.docker.io/kubevirt/virt-operator@sha256:7f244ef6517cb73d6c9ed4ca85e2163b43b19c8ff810ad746853a3e247826fa3
         - name: WATCH_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['olm.targetNamespaces']
         - name: KUBEVIRT_VERSION
-          value: v0.20.7
+          value: v0.26.2
         - name: VIRT_API_SHASUM
-          value: sha256:bd8fcb331b76fb56576b90f4fd9bbb075383e0f9d9defab92e91188d88e7cdc5
+          value: sha256:0224f665a28c43219ce90b7e59e61b89bd46d8acea2bf3c819f4e4f816affde3
         - name: VIRT_CONTROLLER_SHASUM
-          value: sha256:1f95660b4cffcc04dcaf9cabc701c8561dc115bd4a7227275d58f175bfcd9854
+          value: sha256:7b4a1a0c16370b9868def606c439a54244a0ebf8363f47f9dffa6d4f18cf03d6
         - name: VIRT_HANDLER_SHASUM
-          value: sha256:f09c6a207482d2655dd2b8842ed0b8f3cd0e1372cf16d4169839148a8f9d653a
+          value: sha256:d699ef1f188d2b5772fd71fca035ef23f4cb41d99126d9839aa03357d218c044
         - name: VIRT_LAUNCHER_SHASUM
-          value: sha256:c35fa7f75823b284dfa904752a3f3d5dd15f4c6b8277a13200a5283d6e8ccdf7
-        image: index.docker.io/kubevirt/virt-operator@sha256:0930c216340f483ff5afea129cfc9868d97020d2572af984ebbe3196e671abef
+          value: sha256:371e04dc91a9df3d7e7d4343828fdf963bfe2270f7abe56d6794f3320325488a
+        image: index.docker.io/kubevirt/virt-operator@sha256:7f244ef6517cb73d6c9ed4ca85e2163b43b19c8ff810ad746853a3e247826fa3
         imagePullPolicy: IfNotPresent
         name: virt-operator
         ports:
         - containerPort: 8443
           name: metrics
+          protocol: TCP
+        - containerPort: 8444
+          name: webhooks
           protocol: TCP
         readinessProbe:
           httpGet:
