@@ -1,0 +1,43 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/os: linux
+  name: vm-with-pvc
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: vm-with-pvc
+    spec:
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: disk0
+          - cdrom:
+              bus: sata
+              readonly: true
+            name: cloudinitdisk
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 1024M
+      volumes:
+      - name: disk0
+        persistentVolumeClaim:
+          claimName: fedora-pvc
+      - cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            hostname: vm1
+            ssh_pwauth: True
+            disable_root: false
+            ssh_authorized_keys:
+            - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCU2A7Z+MrO7TiNvKYr+ZYU9ocH+9jEsuGOJLQg5CNNnqxI6ejpy99JKP8b/xIKWMxZqy4vtec6SONv9OocKOJi0Syfwz+eHpT2cPoV4OckK4AS0/9XSVyWvA7JX97WGHV5hcSElUpNFaDm7ROH9pAnTd1Z3UxOORuf8SiIxRsH0ykmP0b3xEVE7kL7QJ85qGfV81NrwUDZnJGQMy8PD+yADakF2GxfkFL+s3sVvGyVyrI6Fdo4+B4BU1iiF+6BGdm/LfdTB2Jpp+le46QqSnpOnu30T2yHYijGngmWwkGi4KjhyhaVadWRA2+FIVkNnAa+jTCHfNa2Q6ccv4t7IWoz
+        name: cloudinitdisk

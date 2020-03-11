@@ -1,0 +1,50 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/vm: vm-example
+  name: vm-example
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: vm-example
+    spec:
+      domain:
+        devices:
+          disks:
+          - name: base-img
+            disk:
+              bus: virtio
+          - name: app-data
+            disk:
+              bus: virtio
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 64M
+      volumes:
+      - name: base-img
+        dataVolume:
+          name: fedora-img
+      - name: app-data
+        persistentVolumeClaim:
+          claimName: app-data
+  dataVolumeTemplates:
+  - metadata:
+      name: fedora-img
+      labels:
+        storageos.com/replicas: "1"
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 12Gi
+        storageClassName: fast
+      source:
+        http:
+          url: https://download.fedoraproject.org/pub/fedora/linux/releases/30/Cloud/x86_64/images/Fedora-Cloud-Base-30-1.2.x86_64.raw.xz
