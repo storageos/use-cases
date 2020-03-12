@@ -1,0 +1,16 @@
+apiVersion: cdi.kubevirt.io/v1alpha1
+kind: DataVolume
+metadata:
+  name: fedora-cloned2
+spec:
+  source:
+    pvc:
+      namespace: default
+      name: fedora-img
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: fast
+    resources:
+      requests:
+        storage: 16Gi

@@ -19,6 +19,9 @@ spec:
           - disk:
               bus: virtio
             name: disk0
+          - disk:
+              bus: virtio
+            name: disk2
           - cdrom:
               bus: sata
               readonly: true
@@ -29,13 +32,21 @@ spec:
           requests:
             memory: 1024M
       volumes:
-      - name: disk0
+      - containerDisk:
+          image: kubevirt/fedora-cloud-container-disk-demo:latest
+        name: disk0
+      #- name: disk0
+        #persistentVolumeClaim:
+          #claimName: fedora-pvc
+      - name: disk2
         persistentVolumeClaim:
-          claimName: fedora-pvc
+          claimName: app-data
       - cloudInitNoCloud:
           userData: |
             #cloud-config
             hostname: vm1
+            password: 'fedora'
+            chpasswd: { expire: False }
             ssh_pwauth: True
             disable_root: false
             ssh_authorized_keys:

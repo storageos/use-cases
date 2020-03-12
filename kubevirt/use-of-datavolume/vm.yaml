@@ -1,0 +1,59 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  name: fedora
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora
+    spec:
+      domain:
+        devices:
+          rng: {}
+          disks:
+          - disk:
+              bus: virtio
+            name: pvcdisk
+          - cdrom:
+              bus: sata
+              readonly: true
+            name: cloudinitdisk
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 512M
+      volumes:
+      - name: pvcdisk
+        dataVolume:
+          name: fedora-img
+      #- name: pvcdisk
+        #persistentVolumeClaim:
+          #claimName: fedora-1
+      - cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            hostname: vm1
+            password: 'fedora'
+            chpasswd: { expire: False }
+            ssh_pwauth: True
+            disable_root: false
+        name: cloudinitdisk
+  dataVolumeTemplates:
+  - metadata:
+      name: fedora-img
+      labels:
+        storageos.com/replicas: "0"
+    spec:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 12Gi
+        storageClassName: fast
+      source:
+        http:
+          url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-31-1.9.x86_64.raw.xz

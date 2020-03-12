@@ -1,15 +1,15 @@
 apiVersion: cdi.kubevirt.io/v1alpha1
 kind: DataVolume
 metadata:
-  name: populated-volume
+  name: fedora-base
 spec:
   source:
       http:
-        url: https://download.fedoraproject.org/pub/fedora/linux/releases/30/Cloud/x86_64/images/Fedora-Cloud-Base-30-1.2.x86_64.raw.xz
+        url: https://download.fedoraproject.org/pub/fedora/linux/releases/31/Cloud/x86_64/images/Fedora-Cloud-Base-31-1.9.x86_64.raw.xz
   pvc:
     storageClassName: fast
     accessModes:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 12Gi
+        storage: 16Gi
