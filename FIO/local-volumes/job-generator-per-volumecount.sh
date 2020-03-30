@@ -6,11 +6,17 @@ if [ -z "$1" ]; then
 fi
 
 if [ -z "$2" ]; then
-    echo "Node not defined (volume hint, nodeSelector)"
+    echo "Node not defined (pod nodeSelector)"
 fi
+
+if [ -z "$3" ]; then
+    echo "StorageOS node not defined (volume hint, nodeSelector)"
+fi
+
 
 num_vols="$1"
 node="$2"
+stos_node="$3"
 pvc_prefix="$RANDOM"
 profile="profile-${num_vols}vol.fio"
 manifest="./jobs/fio-${num_vols}vol.yaml"
@@ -26,7 +32,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pvc-${pvc_prefix}-$v
   labels:
-    storageos.com/hint.master: "$node"
+    storageos.com/hint.master: "$stos_node"
   annotations:
     volume.beta.kubernetes.io/storage-class: fast
 spec:
@@ -54,7 +60,7 @@ spec:
         kubernetes.io/hostname: "$node"
       containers:
       - name: fio
-        image: senax/docker-fio:latest
+        image: storageos/docker-fio:1.0.0
         command:
           - "fio"
           - "/tmp/$profile"

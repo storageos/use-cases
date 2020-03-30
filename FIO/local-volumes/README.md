@@ -17,14 +17,37 @@ kubectl get node --show-labels
 > The Node selected must have enough capacity to host all the volumes
 > created for the test.
 
+Get the StorageOS node ID for the same node - e846e605-d1c8-4d44-82bf-f6ba8080ece3 in the output below
+
+```bash
+storageos describe node $NODE
+ID                                      e846e605-d1c8-4d44-82bf-f6ba8080ece3
+Name                                    kind-worker2
+Health                                  online
+Addresses:
+  Data Transfer address                 10.61.0.13:5703
+  Gossip address                        10.61.0.13:5711
+  Supervisor address                    10.61.0.13:5704
+  Clustering address                    10.61.0.13:5710
+Labels                                  beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=...
+Created at                              2020-03-30T15:51:27Z (2 hours ago)
+Updated at                              2020-03-30T15:56:37Z (2 hours ago)
+Version                                 MQ
+Available capacity                      490 MiB/9.8 GiB (8.8 GiB in use)
+
+Local volume deployments:
+  DEPLOYMENT ID                         VOLUME                                                                            NAMESPACE  HEALTH  TYPE    SIZE
+  4a109049-f26d-4e7d-bdd4-22f4657aa1cb  pvc-ae11774d-a4b2-4a21-83e9-695c17e8ca6a                                          default    online  master  2.0 GiB
+```
+
 2. Generate tests (4, 8, 16 and 32 volumes)
 
 
 ```bash
-~$ ./job-generator-per-volumecount.sh 4  $NODE_NAME1
-~$ ./job-generator-per-volumecount.sh 8  $NODE_NAME2
-~$ ./job-generator-per-volumecount.sh 16 $NODE_NAME3
-~$ ./job-generator-per-volumecount.sh 32 $NODE_NAME4
+~$ ./job-generator-per-volumecount.sh 4  $NODE_NAME1 $STOS_NODE_ID
+~$ ./job-generator-per-volumecount.sh 8  $NODE_NAME2 $STOS_NODE_ID
+~$ ./job-generator-per-volumecount.sh 16 $NODE_NAME3 $STOS_NODE_ID
+~$ ./job-generator-per-volumecount.sh 32 $NODE_NAME4 $STOS_NODE_ID
 ```
 
 The Job Generator creates a Job in `./jobs/` for each execution and its
