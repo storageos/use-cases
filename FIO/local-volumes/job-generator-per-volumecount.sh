@@ -33,9 +33,8 @@ metadata:
   name: pvc-${pvc_prefix}-$v
   labels:
     storageos.com/hint.master: "$stos_node"
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
+  storageClassName: fast
   accessModes:
     - ReadWriteOnce
   resources:
@@ -56,8 +55,6 @@ spec:
   template:
     spec:
       restartPolicy: Never
-      nodeSelector:
-        kubernetes.io/hostname: "$node"
       containers:
       - name: fio
         image: storageos/docker-fio:1.0.0

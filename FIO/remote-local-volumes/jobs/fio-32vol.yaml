@@ -2,422 +2,392 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-0
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-1
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-2
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-3
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-4
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-5
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-6
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-7
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-8
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-9
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-10
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-11
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-12
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-13
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-14
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-15
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-16
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-17
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-18
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-19
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-20
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-21
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-22
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-23
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-24
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-25
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-26
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-27
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-28
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-29
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-30
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-15328-31
-  annotations:
-    volume.beta.kubernetes.io/storage-class: fast
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+  storageClassName: fast
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: fio-32vol
+  annotations:
+    storageos.com/scheduler: "false"
 spec:
   template:
     spec:
