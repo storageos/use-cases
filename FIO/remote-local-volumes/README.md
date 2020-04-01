@@ -35,10 +35,10 @@ injected into the Job.
 # Use StorageOS CLI to verify where the volumes are collocated
 
 # As a binary
-~$ storageos volume ls 
+~$ storageos get volumes 
 
 # As a container
-~$ kubectl -n storageos exec cli -- storageos volume ls
+~$ kubectl -n storageos exec cli -- storageos get volumes
 
 
 # Verify that the Pod is running
