@@ -1,0 +1,11 @@
+# For StorageOS v1.x only with CSI
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: storageos-replicated
+parameters:
+  fsType: ext4
+  pool: default
+  storageos.com/replicas: "1" # Labels allowed only when using CSI
+provisioner: storageos # CSI driver (recommended)
