@@ -3,13 +3,12 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: fast
-  labels:
-    app: storageos
-provisioner: csi.storageos.com # CSI Driver
+  name: storageos-replicated
+provisioner: csi.storageos.com # CSI driver (recommended)
 parameters:
   fsType: ext4
   pool: default
+  storageos.com/replicas: "1" # Labels allowed only when using CSI
   # Change the NameSpace below if StorageOS doesn't run in kube-system
   csi.storage.k8s.io/node-publish-secret-namespace: kube-system       # NameSpace that runs StorageOS Daemonset
   csi.storage.k8s.io/provisioner-secret-namespace: kube-system        # NameSpace that runs StorageOS Daemonset
