@@ -4,15 +4,18 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: storageos-replicated
-provisioner: csi.storageos.com # CSI driver (recommended)
+provisioner: csi.storageos.com 
+allowVolumeExpansion: true
 parameters:
-  fsType: ext4
   pool: default
+  csi.storage.k8s.io/fstype: ext4
   storageos.com/replicas: "1" # Labels allowed only when using CSI
   # Change the NameSpace below if StorageOS doesn't run in kube-system
-  csi.storage.k8s.io/node-publish-secret-namespace: kube-system       # NameSpace that runs StorageOS Daemonset
-  csi.storage.k8s.io/provisioner-secret-namespace: kube-system        # NameSpace that runs StorageOS Daemonset
-  csi.storage.k8s.io/controller-publish-secret-namespace: kube-system # NameSpace that runs StorageOS Daemonset
+  csi.storage.k8s.io/controller-expand-secret-name: csi-controller-expand-secret
+  csi.storage.k8s.io/controller-publish-secret-name: csi-controller-publish-secret
   csi.storage.k8s.io/node-publish-secret-name: csi-node-publish-secret
   csi.storage.k8s.io/provisioner-secret-name: csi-provisioner-secret
-  csi.storage.k8s.io/controller-publish-secret-name: csi-controller-publish-secret
+  csi.storage.k8s.io/controller-expand-secret-namespace: kube-system   # NameSpace that runs StorageOS Daemonset
+  csi.storage.k8s.io/controller-publish-secret-namespace: kube-system  # NameSpace that runs StorageOS Daemonset
+  csi.storage.k8s.io/node-publish-secret-namespace: kube-system        # NameSpace that runs StorageOS Daemonset
+  csi.storage.k8s.io/provisioner-secret-namespace: kube-system         # NameSpace that runs StorageOS Daemonset
