@@ -12,11 +12,11 @@ spec:
         - "while true; do sleep 3600; done"
       env:
       - name: PG_DATABASE
-        value: userdb
+        value: db
       - name: PG_HOSTNAME
         value: postgres-0.postgres
       - name: PG_USERNAME
-        value: primaryuser
+        value: user
       - name: PG_PASSWORD
         value: password
       - name: PG_PORT

@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: populate-db
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: postgres
+      restartPolicy: Never
+      containers:
+      - name: pg
+        image: crunchydata/crunchy-postgres:centos7-12.3-4.3.2
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - "psql -h $DST -U $USER -c \"CREATE DATABASE $DB\";
+          pg_dump -h $SRC -U $USER --format c $DB | pg_restore --verbose -h $DST -U $USER --format c --dbname $DB"
+        envFrom:
+        - configMapRef:
+            name: postgres-migration

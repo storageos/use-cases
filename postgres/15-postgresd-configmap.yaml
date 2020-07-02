@@ -11,8 +11,7 @@ data:
     PG_PRIMARY_PORT: "5432"
     PG_MODE: primary
     PG_PRIMARY_PASSWORD: password
-    PG_USER: testuser
+    PG_USER: user
     PG_PASSWORD: password
-    PG_DATABASE: userdb
-    PG_ROOT_PASSWORD: password
-
+    PG_DATABASE: db
+    PG_ROOT_PASSWORD: root

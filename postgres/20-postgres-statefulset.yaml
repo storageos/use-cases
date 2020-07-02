@@ -21,7 +21,7 @@ spec:
         fsGroup: 26
       containers:
       - name: pg
-        image: crunchydata/crunchy-postgres:centos7-10.8-2.4.0
+        image: crunchydata/crunchy-postgres:centos7-12.3-4.3.2
         volumeMounts:
           - name: pg-data
             mountPath: /pgdata
@@ -35,7 +35,7 @@ spec:
         env: prod
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: "fast" # StorageOS storageClass 
+      storageClassName: "storageos-replicated"
       resources:
         requests:
-          storage: 5Gi
+          storage: 10Gi

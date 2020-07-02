@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backup-db
+spec:
+  schedule: "00 23 * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: postgres
+          restartPolicy: Never
+          containers:
+          - name: pg
+            image: crunchydata/crunchy-postgres:centos7-12.3-4.3.2
+            command: ["/bin/sh"]
+            args:
+            - -c
+            - "pg_dump -h $SRC -U $USER --clean --if-exists --format c $DB > /backup/`date`-backup.db" # Send to safe store 
+            envFrom:
+            - configMapRef:
+                name: postgres-backups
