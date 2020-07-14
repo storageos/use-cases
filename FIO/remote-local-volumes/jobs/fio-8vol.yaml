@@ -106,7 +106,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: fio
-        image: senax/docker-fio:latest
+        image: storageos/fio:3.20
         command:
           - "fio"
           - "/tmp/profile-8vol.fio"
