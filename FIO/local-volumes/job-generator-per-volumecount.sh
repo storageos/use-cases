@@ -57,7 +57,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: fio
-        image: storageos/docker-fio:1.0.0
+        image: storageos/docker-fio:3.20
         command:
           - "fio"
           - "/tmp/$profile"
