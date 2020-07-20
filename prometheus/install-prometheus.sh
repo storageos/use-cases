@@ -10,7 +10,7 @@ if [ ! -d prometheus-operator ]; then
 fi
 
 # Install the prometheus-operator
-kubectl create -f prometheus-operator/bundle.yaml
+kubectl apply -f prometheus-operator/bundle.yaml
 
 # Wait until the operator pod is running before moving on
 until $(kubectl get pods -l app.kubernetes.io/name=prometheus-operator --no-headers | awk '{print $3}' | grep -q Running); do
@@ -19,6 +19,6 @@ until $(kubectl get pods -l app.kubernetes.io/name=prometheus-operator --no-head
 done
 
 # Create the Prometheus CR and StorageOS ServiceMonitor
-kubectl create -f ./manifests/prometheus/
+kubectl apply -f ./manifests/prometheus/
 
 echo -e "${GR}Checkout status: kubectl get pods -l app=prometheus${NC}"
