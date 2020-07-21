@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # 
-# The following script provisions a remote volume with no replicas and runs fio tests
+# The following script provisions a local volume with one replica and runs fio tests
 # to measure StorageOS performance. The FIO tests that are run can be found
 # here: https://github.com/storageos/dbench/blob/master/docker-entrypoint.sh
 #
@@ -19,7 +19,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Welcome to the StorageOS quick FIO job generator script for a remote volume with no replicas"
+echo -e "${GREEN}Welcome to the StorageOS quick FIO job generator script for a local volume with one replica"
 echo
 
 # Checking if jq is in the PATH
@@ -49,7 +49,7 @@ if [ -f "$manifest" ]; then
     rm -f "$manifest"
 fi
 
-# Create a 25 Gib StorageOS volume with no replicas manifest
+# Create a 25 Gib StorageOS volume with one replica manifest
 cat <<END >> $manifest
 ---
 apiVersion: v1
@@ -58,6 +58,7 @@ metadata:
   name: pvc-${pvc_prefix}
   labels:
     storageos.com/hint.master: "${node_id1}"
+    storageos.com/replicas: "1"
 spec:
   storageClassName: fast
   accessModes:

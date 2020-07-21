@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# 
+#
 # The following script provisions a local volume with no replicas and runs fio tests
 # to measure StorageOS performance. The FIO tests that are run can be found
 # here: https://github.com/storageos/dbench/blob/master/docker-entrypoint.sh
@@ -12,7 +12,7 @@ set -euo pipefail
 #    cluster-admin privileges - export KUBECONFIG as appropriate
 #  - StorageOS CLI running as a pod in the cluster
 #  - jq in the PATH 
-#  
+#
 
 # Define some colours for later
 RED='\033[0;31m'
@@ -38,7 +38,7 @@ node_id=$(echo $node_details | jq -r '.[1]')
 # The Name of the 1st node in the cluster
 node_name=$(echo $node_details | jq -r '.[0]')
 pvc_prefix="$RANDOM"
-manifest_path="./tmp-$RANDOM/jobs"
+manifest_path="./tmp-local-fio"
 manifest="${manifest_path}/dbench.yaml"
 
 if [ -f "$manifest" ]; then
@@ -48,7 +48,7 @@ fi
 # Create a temporary dir where the dbench.yaml will get created in
 mkdir -p $manifest_path
 
-# Create a 25 Gib StorageOS volume with no replicas
+# Create a 25 Gib StorageOS volume with no replicas manifest
 cat <<END >> $manifest
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -66,7 +66,7 @@ spec:
 ---
 END
 
-# Create batch job for the FIO test
+# Create batch job for the FIO tests manifest
 cat <<END >> $manifest
 apiVersion: batch/v1
 kind: Job
