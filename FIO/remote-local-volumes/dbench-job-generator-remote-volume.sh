@@ -7,7 +7,6 @@ node_id=$(echo $node_details | jq -r '.[1]')
 node_name=$(echo $node_details | jq -r '.[0]')
 node_id1=$(echo $node_details | jq -r '.[3]')
 node_name1=$(echo $node_details | jq -r '.[4]')
-node_details1=$(kubectl -n kube-system exec cli -- storageos describe nodes -ojson | jq -r '[.[1].labels."kubernetes.io/hostname",.[1].id]')
 
 pvc_prefix="$RANDOM"
 manifest="./jobs/dbench.yaml"
@@ -38,14 +37,14 @@ cat <<END >> $manifest
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fio
+  name: remote-volume-fio
 spec:
   template:
     spec:
       nodeSelector:
         "kubernetes.io/hostname": ${node_name}
       containers:
-      - name: fio
+      - name: remote-volume-fio
         image: storageos/dbench:latest
         imagePullPolicy: Always
         env:
