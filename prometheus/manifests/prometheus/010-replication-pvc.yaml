@@ -1,0 +1,17 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: storageos-replicated
+provisioner: csi.storageos.com # Provisioner when using CSI
+parameters:
+  fsType: ext4
+  pool: default
+  storageos.com/replicas: "1" # Enforces 1 replica for the Volume
+
+  # Change the Namespace below if StorageOS doesn't run in kube-system
+  csi.storage.k8s.io/node-publish-secret-namespace: kube-system       # Namespace that runs StorageOS Daemonset
+  csi.storage.k8s.io/provisioner-secret-namespace: kube-system        # Namespace that runs StorageOS Daemonset
+  csi.storage.k8s.io/controller-publish-secret-namespace: kube-system # Namespace that runs StorageOS Daemonset
+  csi.storage.k8s.io/node-publish-secret-name: csi-node-publish-secret
+  csi.storage.k8s.io/provisioner-secret-name: csi-provisioner-secret
+  csi.storage.k8s.io/controller-publish-secret-name: csi-controller-publish-secret

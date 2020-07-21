@@ -11,7 +11,7 @@ spec:
   serviceAccountName: prometheus
   serviceMonitorSelector:
     matchLabels:
-      app: storageos
+      etcd_cluster: storageos-etcd
   securityContext:
     fsGroup: 2000
     runAsNonRoot: true
@@ -24,7 +24,7 @@ spec:
           env: prod
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: fast
+        storageClassName: storageos-replicated
         resources:
           requests:
             storage: 1Gi
