@@ -121,13 +121,14 @@ echo -e "${GREEN}This can take up to 5 minutes${NC}"
 sleep 5
 pod=$(kubectl get pod -l job-name=${fio_job} --no-headers -ocustom-columns=_:.metadata.name 2>/dev/null || :)
 SECONDS=0
-TIMEOUT=180
+TIMEOUT=360
 while ! kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Succeeded; do
   pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
   # >&2 echo "DEBUG: `date` Pod: ${pod} Status: ${pod_status}"
   if [ $SECONDS -gt $TIMEOUT ]; then
       echo "The pod $pod didn't succeed after $TIMEOUT seconds" 1>&2
       echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      kubectl delete -f ${manifest}
       exit 1
   fi
 done

@@ -41,7 +41,7 @@ pvc_prefix="$RANDOM"
 manifest_path="./tmp-local-fio"
 fio_job="local-volume-no-replica-fio"
 manifest="${manifest_path}/${fio_job}.yaml"
-
+logs_path="./tmp-fio-logs"
 
 if [ -d "$manifest_path" ]; then
     rm -rf "$manifest_path"
@@ -50,7 +50,7 @@ fi
 # Create a temporary dir where the dbench.yaml will get created in
 mkdir -p $manifest_path
 
-[ ! -d "$manifest_path" ] && mkdir -p ${logs_path}
+[ ! -d "${logs_path}" ] && mkdir -p ${logs_path}
 
 # Create a 25 Gib StorageOS volume with no replicas manifest
 cat <<END >> $manifest
@@ -121,13 +121,14 @@ sleep 5
 
 pod=$(kubectl get pod -l job-name=${fio_job} --no-headers -ocustom-columns=_:.metadata.name 2>/dev/null || :)
 SECONDS=0
-TIMEOUT=180
+TIMEOUT=360
 while ! kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Succeeded; do
   pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
   # >&2 echo "DEBUG: `date` Pod: ${pod} Status: ${pod_status}"
   if [ $SECONDS -gt $TIMEOUT ]; then
       echo "The pod $pod didn't succeed after $TIMEOUT seconds" 1>&2
       echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      kubectl delete -f ${manifest}
       exit 1
   fi
 done

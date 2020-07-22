@@ -27,11 +27,11 @@ echo -e "${GREEN}I'll now run the following 4 scenarios and show you the results
 echo
 
 # Execute dbench-job-generator-local-volume.sh script
-./local-volumes/dbench-job-generator-local-volume.sh
+# ./local-volumes/dbench-job-generator-local-volume.sh
 
-# Execute dbench-job-generator-local-volume-replica.sh script
-./local-volumes/dbench-job-generator-local-volume-replica.sh
+# # Execute dbench-job-generator-local-volume-replica.sh script
+# ./local-volumes/dbench-job-generator-local-volume-replica.sh
 
-./local-volumes/dbench-job-generator-remote-volume.sh
+./remote-local-volumes/dbench-job-generator-remote-volume.sh
 
-./local-volumes/dbench-job-generator-remote-volume-replica.sh
+./remote-local-volumes/dbench-job-generator-remote-volume-replica.sh
