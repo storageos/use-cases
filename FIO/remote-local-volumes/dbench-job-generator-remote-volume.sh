@@ -105,5 +105,5 @@ echo -e "${GREEN}Follow benchmarking progress using:${NC}"
 echo -e "kubectl logs -f job/remote-volume-fio"
 echo -e "${GREEN}Once the tests are finished, clean up using:${NC}"
 echo -e "kubectl delete -f ${manifest}"
-echo -e "rm -rf ${manifest}"
+echo -e "rm -rf ${manifest_path}"
 echo
