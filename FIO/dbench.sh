@@ -28,3 +28,10 @@ echo
 
 # Execute dbench-job-generator-local-volume.sh script
 ./local-volumes/dbench-job-generator-local-volume.sh
+
+# Execute dbench-job-generator-local-volume-replica.sh script
+./local-volumes/dbench-job-generator-local-volume-replica.sh
+
+./local-volumes/dbench-job-generator-remote-volume.sh
+
+./local-volumes/dbench-job-generator-remote-volume-replica.sh

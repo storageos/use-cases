@@ -50,6 +50,8 @@ fi
 # Create a temporary dir where the dbench.yaml will get created in
 mkdir -p $manifest_path
 
+[ ! -d "$manifest_path" ] && mkdir -p ${logs_path}
+
 # Create a 25 Gib StorageOS volume with no replicas manifest
 cat <<END >> $manifest
 apiVersion: v1
@@ -115,16 +117,24 @@ kubectl create -f ${manifest}
 echo -e "${GREEN}Waiting for the ${fio_job} Job to finish.${NC}"
 echo -e "${GREEN}This can take up to 5 minutes${NC}"
 
-sleep 3
+sleep 5
 
 pod=$(kubectl get pod -l job-name=${fio_job} --no-headers -ocustom-columns=_:.metadata.name 2>/dev/null || :)
-echo $pod
-
+SECONDS=0
+TIMEOUT=180
 while ! kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Succeeded; do
   pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
-  >&2 echo "DEBUG: `date` Pod: ${pod} Status: ${pod_status}"
-  sleep 5
+  # >&2 echo "DEBUG: `date` Pod: ${pod} Status: ${pod_status}"
+  if [ $SECONDS -gt $TIMEOUT ]; then
+      echo "The pod $pod didn't succeed after $TIMEOUT seconds" 1>&2
+      echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      exit 1
+  fi
 done
 
 pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
 echo -e "${GREEN}Pod: ${pod}, ${pod_status}${NC}"
+
+kubectl logs -f jobs/${fio_job} > ${logs_path}/local-volume-no-replica-fio.log
+tail -n 7 ${logs_path}/local-volume-no-replica-fio.log
+kubectl delete -f ${manifest}
