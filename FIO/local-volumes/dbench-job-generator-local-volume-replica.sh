@@ -36,7 +36,8 @@ node_id=$(echo $node_details | jq -r '.[1]')
 node_name=$(echo $node_details | jq -r '.[0]')
 pvc_prefix="$RANDOM"
 manifest_path="./tmp-local-fio"
-manifest="${manifest_path}/dbench.yaml"
+fio_job="local-volume-with-replica-fio"
+manifest="${manifest_path}/${fio_job}.yaml"
 
 
 # Create a temporary dir where the dbench.yaml will get created in
@@ -51,7 +52,7 @@ cat <<END >> $manifest
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-${pvc_prefix}
+  name: pvc-${pvc_prefix}-1
   labels:
     storageos.com/hint.master: "${node_id}"
     storageos.com/replicas: "1"
@@ -70,12 +71,12 @@ cat <<END >> $manifest
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: local-volume-fio
+  name: "${fio_job}"
 spec:
   template:
     spec:
       containers:
-      - name: local-volume-fio
+      - name: "${fio_job}"
         image: storageos/dbench:latest
         imagePullPolicy: Always
         env:
@@ -93,13 +94,3 @@ spec:
 END
 
 
-echo -e "${GREEN}FIO Job Manifest created and can be found under ${manifest_path}${NC}"
-echo -e "${GREEN}Deploy the local-volume-fio:${NC}"
-echo -e "kubectl create -f ${manifest}"
-echo -e "${GREEN}Deploy the local-volume-fio:${NC}"
-echo -e "${GREEN}Follow benchmarking progress using:${NC}"
-echo -e "kubectl logs -f job/local-volume-fio"
-echo -e "${GREEN}Once the tests are finished, clean up using:${NC}"
-echo -e "kubectl delete -f ${manifest}"
-echo -e "rm -rf ${manifest_path}"
-echo
