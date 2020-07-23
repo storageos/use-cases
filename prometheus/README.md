@@ -32,60 +32,41 @@ please see Install Grafana
 ```
 
 
-## Install the Prometheus Operator
+## Install Prometheus and the Prometheus Operator
 
-1. Clone the StorageOS deploy repository and move into the
-   `prometheus-operator` directory
+1. Create the Prometheus objects.
+
+   ```bash
+   ./install-prometheus.sh
+   ```
+
+1. Confirm Prometheus is up and running.
+
+   ```bash
+   $ kubectl get pods -w -l app=prometheus
+   NAME                                READY   STATUS              RESTARTS   AGE
+   prometheus-prometheus-storageos-0   3/3     READY               0          1m
+   ```
+
+1. You can see the created PVC using.
     ```bash
-    git clone https://github.com/coreos/prometheus-operator.git prometheus-operator
+    $ kubectl get pvc
+    NAME                                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS           AGE
+    data-prometheus-prometheus-storageos-0   Bound    pvc-b6c17c0a-e76b-4a0b-8fc6-46c0e1629210   1Gi        RWO            storageos-replicated   65m
     ```
-1. Deploy the quick start `bundle.yaml`
-    ```bash
-    kubectl create -f prometheus-operator/bundle.yaml
+
+1. In the Prometheus deployment script, a service monitors is also created. The new Prometheus instance will use the storageos-etcd service monitor to start scraping metrics from the storageos-etcd pods. (Assuming the storageos cluster was setup using ETCD as pods) For more information about service monitors, have a look at the upstream [documentation](https://coreos.com/operators/prometheus/docs/latest/user-guides/getting-started.html)
+    $ kubectl get servicemonitor                       
+    NAME             AGE
+    storageos-etcd   5d1h
     ```
-1. Verify that the Prometheus operator is running.
-   ```bash
-   kubectl get pods -l apps.kubernetes.io/name=prometheus-operator
-   ```
 
-## Install Prometheus
-
-Now that the Prometheus Operator is installed, a Prometheus CR can be created
-which the Prometheus operator will act upon to configure a Prometheus StatefulSet
-
-1. Clone the StorageOS deploy repo
+1. Port forward in the prometheus pod to access the prom webapp.
    ```bash
-   git clone https://github.com/storageos/use-cases.git storageos-usecases
-   cd storageos-usecases/prometheus/manifests/prometheus
+   $ kubectl port-forward prometheus-prometheus-storageos-0 9090
    ```
-1. If your cluster uses RBAC then create the necessary Cluster role and service
-   account for Prometheus.
-   ```bash
-   kubectl create -f prometheus-rbac.yaml
-   ```
-1. Create a Prometheus CR that defines a Prometheus StatefulSet.
-   ```bash
-   kubectl create -f prometheus-cr.yaml
-   ```
-1. Create a ServiceMonitor CR that directs Prometheus to scrape the Endpoints
-   defined in the `storageos` Endpoints resource. Prometheus will scrape the
-   `/metrics` URL of the Endpoints and collect the metrics.
-   ```
-   kubectl create -f storageos-serviceMonitor.yaml
-   ```
-> N.B. An additional serviceMonitor manifest is avaliable that will monitor
-> etcd pods in the etcd namespace. This serviceMonitor can be used with the [etcd running as
-> pods](https://grafana.com/dashboards/10323) Grafana dashboard.
-
-1. In order to view the Prometheus UI in the browser port forward the local
-   port to the Prometheus pod port.
-   ```bash
-   kubectl port-forward prometheus-prometheus-storageos-0 9090
-   ```
-   The Prometheus UI can now be seen in the browser at localhost:9090
-1. Now that the Prometheus UI is available StorageOS metrics can be queried
-   from the Graph page. A complete list of StorageOS metrics can be found
-   [here](https://docs.storageos.com/docs/reference/prometheus)
+   Then go on a web browser and type the url `localhost:9090` to access the prometheus webapp.
+   Confirm that prometheus is up and running there.
 
 ## Install Grafana
 
