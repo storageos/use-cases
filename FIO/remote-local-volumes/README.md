@@ -94,15 +94,10 @@ the StorageOS CLI running as a pod in the cluster.
     $ ./dbench-job-generator-remote-volume.sh
     ```
 
-    > It generates a Job in `temp-remote-fio/`
+    > It generates job manifest `remote-volume-without-replica-fio.yaml` in `temp-local-fio/`
 
-1. Run the FIO tests
-
-    ```bash
-    $ kubectl create -f ./tmp-remote-fio/dbench.yaml
-    ```
-
-1. Check resources were provisioned
+1. On a new terminal while the script is running check the state of the
+   resources provisioned
 
     ```bash
     # Check that all the PVCs are provisioned
@@ -118,7 +113,7 @@ the StorageOS CLI running as a pod in the cluster.
 1. Get the FIO results
 
     ```bash
-    $ kubectl logs -f job.batch/tmp-remote-fio
+    $ kubectl logs -f job.batch/remote-volume-without-replica-fio
     ```
 
 1. Cleanup FIO Job
@@ -126,8 +121,9 @@ the StorageOS CLI running as a pod in the cluster.
     > Once the tests are finished, clean up using the following commands.
 
     ```bash
-    $ kubectl delete -f ./tmp-remote-fio/dbench.yaml
+    $ kubectl delete -f ./tmp-remote-fio/remote-volume-without-replica-fio.yaml
     $ rm -rf ./tmp-remote-fio
+    $ rm -rf ./tmp-fio-logs
     ```
 
 ### Remote Volume with a replica
@@ -144,15 +140,10 @@ the StorageOS CLI running as a pod in the cluster.
     $ ./dbench-job-generator-remote-volume-replica.sh
     ```
 
-    > It generates a Job in `temp-remote-fio/`
+    > It generates job manifest `remote-volume-with-replica-fio.yaml` in `temp-remote-fio/`
 
-1. Run the FIO tests
-
-    ```bash
-    $ kubectl create -f ./tmp-remote-fio/dbench.yaml
-    ```
-
-1. Check resources were provisioned
+1. On a new terminal while the script is running check the state of the
+   resources provisioned
 
     ```bash
     # Check that all the PVCs are provisioned
@@ -168,7 +159,7 @@ the StorageOS CLI running as a pod in the cluster.
 1. Get the FIO results
 
     ```bash
-    $ kubectl logs -f job.batch/remote-volume-fio
+    $ kubectl logs -f job.batch/remote-volume-with-replica-fio
     ```
 
 1. Cleanup FIO Job
@@ -176,6 +167,7 @@ the StorageOS CLI running as a pod in the cluster.
     > Once the tests are finished, clean up using the following commands.
 
     ```bash
-    $ kubectl delete -f ./tmp-remote-fio/dbench.yaml
+    $ kubectl delete -f ./tmp-remote-fio/remote-volume-with-replica-fio.yaml
     $ rm -rf ./tmp-remote-fio
+    $ rm -rf ./tmp-fio-logs
     ```

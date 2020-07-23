@@ -26,8 +26,8 @@ echo
 # Checking if jq is in the PATH
 if ! command -v jq &> /dev/null
 then
-    echo "${RED}jq could not be found. Please install jq and run the script again${NC}"
-    exit
+    echo -e "${RED}jq could not be found. Please install jq and run the script again${NC}"
+    exit 1
 fi
 
 # Get the node name and id where the volume will get provisioned and attached on
@@ -39,7 +39,7 @@ node_id=$(echo $node_details | jq -r '.[1]')
 node_name=$(echo $node_details | jq -r '.[0]')
 pvc_prefix="$RANDOM"
 manifest_path="./tmp-local-fio"
-fio_job="local-volume-no-replica-fio"
+fio_job="local-volume-without-replica-fio"
 manifest="${manifest_path}/${fio_job}.yaml"
 logs_path="./tmp-fio-logs"
 
@@ -97,25 +97,14 @@ spec:
   backoffLimit: 4
 END
 
-# # Deploying FIO Job
-# echo -e "${GREEN}Deploying the ${fio_job} Job${NC}"
-# echo -e "${GREEN}FIO Job Manifest created and can be found under ${manifest_path}${NC}"
-# echo -e "${GREEN}Deploy the "${fio_job}":${NC}"
-# echo -e "kubectl create -f ${manifest}"
-# echo -e "${GREEN}Deploy the "${fio_job}":${NC}"
-# echo -e "${GREEN}Follow benchmarking progress using:${NC}"
-# echo -e "kubectl logs -f job/"${fio_job}""
-# echo -e "${GREEN}Once the tests are finished, clean up using:${NC}"
-# echo -e "kubectl delete -f ${manifest}"
-# echo -e "rm -rf ${manifest_path}"
-# echo
-
-
-# echo -e "kubectl create -f ${manifest}"
+# Deploying FIO Job
+echo -e "${GREEN}Deploying the ${fio_job} Job${NC}"
+# Create Job and PVC
 kubectl create -f ${manifest}
 
-echo -e "${GREEN}Waiting for the ${fio_job} Job to finish.${NC}"
-echo -e "${GREEN}This can take up to 5 minutes${NC}"
+echo -e "${GREEN}FIO tests started.${NC}"
+echo -e "${GREEN} Waiting up to 5 minutes for the ${fio_job} Job to finish.${NC}"
+echo
 
 sleep 5
 
@@ -124,18 +113,23 @@ SECONDS=0
 TIMEOUT=360
 while ! kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Succeeded; do
   pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
-  # >&2 echo "DEBUG: `date` Pod: ${pod} Status: ${pod_status}"
   if [ $SECONDS -gt $TIMEOUT ]; then
       echo "The pod $pod didn't succeed after $TIMEOUT seconds" 1>&2
       echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      # Cleanup if job fails for any reason
       kubectl delete -f ${manifest}
       exit 1
   fi
+  sleep 10
 done
 
-pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
-echo -e "${GREEN}Pod: ${pod}, ${pod_status}${NC}"
+echo -e "${GREEN}${fio_job} Job finished successfully.${NC}"
+echo
 
-kubectl logs -f jobs/${fio_job} > ${logs_path}/local-volume-no-replica-fio.log
-tail -n 7 ${logs_path}/local-volume-no-replica-fio.log
+#  Gathering Logs and  printing out StorageOS performance
+kubectl logs -f jobs/${fio_job} > ${logs_path}/${fio_job}.log
+tail -n 7 ${logs_path}/${fio_job}.log
+echo
+echo -e "${GREEN}Removing ${fio_job} Job.${NC}"
+# Deleting the Job to clean up the cluster
 kubectl delete -f ${manifest}
