@@ -106,8 +106,9 @@ echo -e "${GREEN}Deploying the ${fio_job} Job${NC}"
 # Create Job and PVC
 kubectl create -f ${manifest}
 
-echo -e "${GREEN}Waiting for the ${fio_job} Job to finish.${NC}"
-echo -e "${GREEN}This can take up to 5 minutes${NC}"
+echo -e "${GREEN}FIO tests started.${NC}"
+echo -e "${GREEN}Waiting up to 5 minutes for the ${fio_job} Job to finish.${NC}"
+echo
 
 sleep 5
 pod=$(kubectl get pod -l job-name=${fio_job} --no-headers -ocustom-columns=_:.metadata.name 2>/dev/null || :)

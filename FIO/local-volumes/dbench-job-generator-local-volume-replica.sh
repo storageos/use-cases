@@ -101,7 +101,8 @@ echo -e "${GREEN}Deploying the ${fio_job} Job${NC}"
 # Create Job and PVC
 kubectl create -f ${manifest}
 
-echo -e "${GREEN}FIO tests started. Waiting up to 5 minutes for the ${fio_job} Job to finish.${NC}"
+echo -e "${GREEN}FIO tests started.${NC}"
+echo -e "${GREEN}Waiting up to 5 minutes for the ${fio_job} Job to finish.${NC}"
 echo
 
 sleep 5
