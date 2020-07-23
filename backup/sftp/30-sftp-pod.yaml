@@ -17,8 +17,12 @@ spec:
         subPath: id_rsa
   volumes:
   - name: sftp-config
-    configMap:
-      name: sftp-config
+    secret:
+      secretName: sftp-config
+      defaultMode: 0600
+      items:
+      - key: users.conf
+        path: users.conf
   - name: ssh-key-private
     secret:
       secretName: ssh-key-private
