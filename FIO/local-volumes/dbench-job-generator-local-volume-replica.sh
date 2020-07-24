@@ -2,7 +2,8 @@
 set -euo pipefail
 
 #
-# The following script provisions a local volume with one replica and runs fio tests
+# The following script provisions a volume with a replica,
+# then deploys a pod on the same node as the master volume and runs fio tests
 # to measure StorageOS performance. The FIO tests that are run can be found
 # here: https://github.com/storageos/dbench/blob/master/docker-entrypoint.sh
 #
@@ -12,16 +13,6 @@ set -euo pipefail
 #    cluster-admin privileges - export KUBECONFIG as appropriate
 #  - StorageOS CLI running as a pod in the cluster
 #  - jq in the PATH
-#
-# Deploy the StorageOS CLI as a container:
-# $ kubectl -n kube-system run \
-# --image storageos/cli:v2.1.0 \
-# --restart=Never                          \
-# --env STORAGEOS_ENDPOINTS=storageos:5705 \
-# --env STORAGEOS_USERNAME=storageos       \
-# --env STORAGEOS_PASSWORD=storageos       \
-# --command cli                            \
-# -- /bin/sh -c "while true; do sleep 999999; done"
 #
 
 # Define some colours for later
@@ -42,23 +33,16 @@ fi
 # Get the node name and id where the volume will get provisioned and attached on
 # Using the StorageOS cli is guarantee that the node is running StorageOS
 node_details=$(kubectl -n kube-system exec cli -- storageos describe nodes -ojson | jq -r '[.[0].labels."kubernetes.io/hostname",.[0].id]')
-node_id=$(echo $node_details | jq -r '.[1]')
-node_name=$(echo $node_details | jq -r '.[0]')
+local_node_name=$(echo $node_details | jq -r '.[0]')
+local_node_id=$(echo $node_details | jq -r '.[1]')
 pvc_prefix="$RANDOM"
-manifest_path="./tmp-local-fio"
+
+# Create a temporary dir where the local-volume-with-replica-fio.yaml will get created in
+manifest_path=$(mktemp -d -t local-volumes-fio)
+
 fio_job="local-volume-with-replica-fio"
 manifest="${manifest_path}/${fio_job}.yaml"
-logs_path="./tmp-fio-logs"
-
-
-if [ -d "$manifest_path" ]; then
-    rm -rf "$manifest_path"
-fi
-
-# Create a temporary dir where the dbench.yaml will get created in
-mkdir -p $manifest_path
-
-[ ! -d "${logs_path}" ] && mkdir -p ${logs_path}
+logs_path=$(mktemp -d -t fio-logs)
 
 # Create a 25 Gib StorageOS volume with one replica manifest
 cat <<END >> $manifest
@@ -67,7 +51,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pvc-${pvc_prefix}-1
   labels:
-    storageos.com/hint.master: "${node_id}"
+    storageos.com/hint.master: "${local_node_id}"
     storageos.com/replicas: "1"
 spec:
   storageClassName: fast
@@ -89,7 +73,7 @@ spec:
   template:
     spec:
       nodeSelector:
-        "kubernetes.io/hostname": ${node_name}
+        "kubernetes.io/hostname": ${local_node_name}
       containers:
       - name: "${fio_job}"
         image: storageos/dbench:latest
@@ -143,3 +127,7 @@ echo
 echo -e "${GREEN}Removing ${fio_job} Job.${NC}"
 # Deleting the Job to clean up the cluster
 kubectl delete -f ${manifest}
+echo
+
+echo -e "${GREEN}I've left temporary scripts and results in $TMPDIR - clean up when ready with:${NC}"
+echo "rm -rf  ${manifest_path} ${logs_path}"

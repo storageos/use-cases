@@ -2,7 +2,8 @@
 set -euo pipefail
 
 #
-# The following script provisions a local volume with one replica and runs fio tests
+# The following script provisions a volume with no replicas,
+# then deploys a pod on a different node than the master volume and runs fio tests
 # to measure StorageOS performance. The FIO tests that are run can be found
 # here: https://github.com/storageos/dbench/blob/master/docker-entrypoint.sh
 #
@@ -13,23 +14,13 @@ set -euo pipefail
 #  - StorageOS CLI running as a pod in the cluster
 #  - jq in the PATH 
 #
-# Deploy the StorageOS CLI as a container:
-# $ kubectl -n kube-system run \
-# --image storageos/cli:v2.1.0 \
-# --restart=Never                          \
-# --env STORAGEOS_ENDPOINTS=storageos:5705 \
-# --env STORAGEOS_USERNAME=storageos       \
-# --env STORAGEOS_PASSWORD=storageos       \
-# --command cli                            \
-# -- /bin/sh -c "while true; do sleep 999999; done"
-#
 
 # Define some colours for later
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Scenario: Remote Volume with a replica${NC}"
+echo -e "${GREEN}Scenario: Remote Volume with no replica${NC}"
 echo
 
 # Checking if jq is in the PATH
@@ -39,31 +30,45 @@ then
     exit
 fi
 
-# Get the node name and id where the volume will get provisioned and attached on
-# Using the StorageOS cli is guarantee that the node is running StorageOS
-node_details=$(kubectl -n kube-system exec cli -- storageos describe nodes -ojson | jq -r '[.[0].labels."kubernetes.io/hostname",.[0].id,.[1].labels."kubernetes.io/hostname",.[1].id]')
-node_id=$(echo $node_details | jq -r '.[1]')
-node_name=$(echo $node_details | jq -r '.[0]')
-node_id1=$(echo $node_details | jq -r '.[3]')
-node_name1=$(echo $node_details | jq -r '.[4]')
+# Checking if StorageOS Cli is running as a pod, if not the script will deploy it
+CLI_VERSION="storageos/cli:v2.1.0"
+STOS_NS="kube-system"
+cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=_:.metadata.name)
 
-pvc_prefix="$RANDOM"
-manifest_path="./tmp-remote-fio"
-fio_job="remote-volume-with-replica-fio"
-manifest="${manifest_path}/${fio_job}.yaml"
-logs_path="./tmp-fio-logs"
+if [ ${cli_pod} != "cli"]
+then
+    echo -p "${RED}StorageOS CLI pod not found. Deploying now${NC}"
 
-
-if [ -d "$manifest_path" ]; then
-    rm -rf "$manifest_path"
+    kubectl -n ${STOS_NS} run \
+    --image ${CLI_VERSION} \
+    --restart=Never                          \
+    --env STORAGEOS_ENDPOINTS=storageos:5705 \
+    --env STORAGEOS_USERNAME=storageos       \
+    --env STORAGEOS_PASSWORD=storageos       \
+    --command cli                            \
+    -- /bin/sh -c "while true; do sleep 999999; done"
 fi
 
-# Create a temporary dir where the dbench.yaml will get created in
-mkdir -p $manifest_path
+# Get the node name and id where the volume will get provisioned and attached on
+# Using the StorageOS cli is guarantee that the node is running StorageOS
+node_details=$(kubectl -n ${STOS_NS} exec cli -- storageos describe nodes -ojson | jq -r '[.[0].labels."kubernetes.io/hostname",.[0].id,.[1].labels."kubernetes.io/hostname",.[1].id]')
+local_node_name=$(echo $node_details | jq -r '.[0]')
+local_node_id=$(echo $node_details | jq -r '.[1]')
 
-[ ! -d "${logs_path}" ] && mkdir -p ${logs_path}
+remote_node_name=$(echo $node_details | jq -r '.[2]')
+remote_node_name=$(echo $node_details | jq -r '.[3]')
 
-# Create a 25 Gib StorageOS volume with one replica manifest
+
+pvc_prefix="$RANDOM"
+# Create a temporary dir where the remote-volume-without-replica-fio.yaml will get created in
+manifest_path=$(mktemp -d -t tmp-remote-fio)
+
+fio_job="remote-volume-without-replica-fio"
+manifest="${manifest_path}/${fio_job}.yaml"
+logs_path=$(mktemp -d -t fio-logs)
+
+
+# Create a 25 Gib StorageOS volume with no replicas manifest
 cat <<END >> $manifest
 ---
 apiVersion: v1
@@ -71,8 +76,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: pvc-${pvc_prefix}
   labels:
-    storageos.com/hint.master: "${node_id1}"
-    storageos.com/replicas: "1"
+    storageos.com/hint.master: "${remote_node_name}"
 spec:
   storageClassName: fast
   accessModes:
@@ -93,7 +97,7 @@ spec:
   template:
     spec:
       nodeSelector:
-        "kubernetes.io/hostname": ${node_name}
+        "kubernetes.io/hostname": ${local_node_name}
       containers:
       - name: "${fio_job}"
         image: storageos/dbench:latest
