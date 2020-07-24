@@ -30,6 +30,25 @@ then
     exit 1
 fi
 
+# Checking if StorageOS Cli is running as a pod, if not the script will deploy it
+CLI_VERSION="storageos/cli:v2.1.0"
+STOS_NS="kube-system"
+cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=_:.metadata.name)
+
+if [ ${cli_pod} != "cli" ]
+then
+    echo -p "${RED}StorageOS CLI pod not found. Deploying now${NC}"
+
+    kubectl -n ${STOS_NS} run \
+    --image ${CLI_VERSION} \
+    --restart=Never                          \
+    --env STORAGEOS_ENDPOINTS=storageos:5705 \
+    --env STORAGEOS_USERNAME=storageos       \
+    --env STORAGEOS_PASSWORD=storageos       \
+    --command cli                            \
+    -- /bin/sh -c "while true; do sleep 999999; done"
+fi
+
 # Get the node name and id where the volume will get provisioned and attached on
 # Using the StorageOS cli is guarantee that the node is running StorageOS
 node_details=$(kubectl -n kube-system exec cli -- storageos describe nodes -ojson | jq -r '[.[0].labels."kubernetes.io/hostname",.[0].id]')

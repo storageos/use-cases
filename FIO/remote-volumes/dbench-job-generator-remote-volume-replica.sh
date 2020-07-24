@@ -35,7 +35,7 @@ CLI_VERSION="storageos/cli:v2.1.0"
 STOS_NS="kube-system"
 cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=_:.metadata.name)
 
-if [ ${cli_pod} != "cli"]
+if [ ${cli_pod} != "cli" ]
 then
     echo -p "${RED}StorageOS CLI pod not found. Deploying now${NC}"
 
