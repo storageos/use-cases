@@ -79,6 +79,8 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        "kubernetes.io/hostname": ${node_name}
       containers:
       - name: "${fio_job}"
         image: storageos/dbench:latest
