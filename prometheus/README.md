@@ -34,10 +34,15 @@ please see Install Grafana
 
 ## Install Prometheus and the Prometheus Operator
 
+This is the Prometheus use case for StorageOS. Following are the steps
+for creating a Prometheus instance and using StorageOS to handle its
+persistent storage. For more information check our Prometheus use case
+[documentation](https://docs.storageos.com/docs/usecases/prometheus)
+
 1. Create the Prometheus objects.
 
    ```bash
-   ./install-prometheus.sh
+   $ ./install-prometheus.sh
    ```
 
 1. Confirm Prometheus is up and running.
@@ -55,7 +60,12 @@ please see Install Grafana
     data-prometheus-prometheus-storageos-0   Bound    pvc-b6c17c0a-e76b-4a0b-8fc6-46c0e1629210   1Gi        RWO            storageos-replicated   65m
     ```
 
-1. In the Prometheus deployment script, a service monitors is also created. The new Prometheus instance will use the storageos-etcd service monitor to start scraping metrics from the storageos-etcd pods. (Assuming the storageos cluster was setup using ETCD as pods) For more information about service monitors, have a look at the upstream [documentation](https://coreos.com/operators/prometheus/docs/latest/user-guides/getting-started.html)
+1. In the Prometheus deployment script, a service monitors is also created. 
+The new Prometheus instance will use the storageos-etcd service monitor to 
+start scraping metrics from the storageos-etcd pods. (Assuming the storageos 
+cluster was setup using ETCD as pods) For more information about service 
+monitors, have a look at the upstream [documentation](https://coreos.com/operators/prometheus/docs/latest/user-guides/getting-started.html).
+   ```bash
     $ kubectl get servicemonitor                       
     NAME             AGE
     storageos-etcd   5d1h
@@ -65,8 +75,8 @@ please see Install Grafana
    ```bash
    $ kubectl port-forward prometheus-prometheus-storageos-0 9090
    ```
-   Then go on a web browser and type the url `localhost:9090` to access the prometheus webapp.
-   Confirm that prometheus is up and running there.
+   Then go on a web browser and type the url `localhost:9090` to access the 
+   prometheus webapp. Confirm that prometheus is up and running there.
 
 ## Install Grafana
 
