@@ -11,7 +11,17 @@ set -euo pipefail
 #  - kubectl in the PATH - kubectl access to this cluster with
 #    cluster-admin privileges - export KUBECONFIG as appropriate
 #  - StorageOS CLI running as a pod in the cluster
-#  - jq in the PATH 
+#  - jq in the PATH
+#
+# Deploy the StorageOS CLI as a container:
+# $ kubectl -n kube-system run \
+# --image storageos/cli:v2.1.0 \
+# --restart=Never                          \
+# --env STORAGEOS_ENDPOINTS=storageos:5705 \
+# --env STORAGEOS_USERNAME=storageos       \
+# --env STORAGEOS_PASSWORD=storageos       \
+# --command cli                            \
+# -- /bin/sh -c "while true; do sleep 999999; done"
 #
 
 # Define some colours for later
