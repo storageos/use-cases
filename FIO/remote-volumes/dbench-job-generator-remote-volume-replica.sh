@@ -122,13 +122,13 @@ echo -e "${GREEN}Deploying the ${fio_job} Job${NC}"
 kubectl create -f ${manifest}
 
 echo -e "${GREEN}FIO tests started.${NC}"
-echo -e "${GREEN}Waiting up to 5 minutes for the ${fio_job} Job to finish.${NC}"
+echo -e "${GREEN}Waiting up to 7 minutes for the ${fio_job} Job to finish.${NC}"
 echo
 
 sleep 5
 pod=$(kubectl get pod -l job-name=${fio_job} --no-headers -ocustom-columns=_:.metadata.name 2>/dev/null || :)
 SECONDS=0
-TIMEOUT=360
+TIMEOUT=420
 while ! kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Succeeded; do
   pod_status=$(kubectl get pod ${pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
   if [ $SECONDS -gt $TIMEOUT ]; then
