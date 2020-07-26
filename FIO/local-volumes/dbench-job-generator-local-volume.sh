@@ -36,7 +36,7 @@ CLI_VERSION="storageos/cli:v2.1.0"
 STOS_NS="kube-system"
 cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=_:.metadata.name)
 
-if [ ${cli_pod} != "cli" ]
+if [ "${cli_pod}" != "cli" ]
 then
     echo -p "${RED}StorageOS CLI pod not found. Deploying now${NC}"
 
@@ -60,11 +60,11 @@ node_name=$(echo $node_details | jq -r '.[0]')
 pvc_prefix="$RANDOM"
 
 # Create a temporary dir where the local-volume-without-replica-fio.yaml will get created in
-manifest_path=$(mktemp -d -t local-volumes-fio)
+manifest_path=$(mktemp -d -t local-volumes-fio-XXXX)
 
 fio_job="local-volume-without-replica-fio"
 manifest="${manifest_path}/${fio_job}.yaml"
-logs_path=$(mktemp -d -t fio-logs)
+logs_path=$(mktemp -d -t fio-logs-XXXX)
 
 # Create a 25 Gib StorageOS volume with no replicas manifest
 cat <<END >> $manifest
@@ -151,5 +151,5 @@ echo -e "${GREEN}Removing ${fio_job} Job.${NC}"
 kubectl delete -f ${manifest}
 echo
 
-echo -e "${GREEN}I've left temporary scripts and results in $TMPDIR - clean up when ready with:${NC}"
-echo "rm -rf  ${manifest_path} ${logs_path}"
+echo -e "${GREEN}Cleaning up${NC}"
+rm -rf "${manifest_path}" "${logs_path}"
