@@ -49,6 +49,17 @@ then
     -- /bin/sh -c "while true; do sleep 999999; done"
 fi
 
+SECONDS=0
+TIMEOUT=30
+while ! kubectl get pod ${cli_pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Running; do
+  if [ $SECONDS -gt $TIMEOUT ]; then
+      echo "The pod ${cli_pod} didn't start after $TIMEOUT seconds" 1>&2
+      echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      exit 1
+  fi
+  sleep 5
+done
+
 # Get the node name and id where the volume will get provisioned and attached on
 # Using the StorageOS cli is guarantee that the node is running StorageOS
 node_details=$(kubectl -n kube-system exec cli -- storageos describe nodes -ojson | jq -r '[.[0].labels."kubernetes.io/hostname",.[0].id]')
