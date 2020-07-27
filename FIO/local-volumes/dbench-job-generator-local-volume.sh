@@ -57,8 +57,8 @@ while ! kubectl -n ${STOS_NS} get pod cli -otemplate="{{ .status.phase }}" 2>/de
   pod_status=$(kubectl -n ${STOS_NS} get pod cli -otemplate="{{ .status.phase }}" 2>/dev/null)
   if [ $SECONDS -gt $TIMEOUT ]; then
       echo "The pod cli didn't start after $TIMEOUT seconds" 1>&2
-      echo -e "${GREEN}Pod: cli, is in ${pod_status}${NC} state."
-      # exit 1
+      echo -e "${RED}Pod: cli, is in ${pod_status}${NC} state."
+      exit 1
   fi
   sleep 5
 done
