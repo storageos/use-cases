@@ -37,7 +37,7 @@ cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=
 
 if [ "${cli_pod}" != "cli" ]
 then
-    echo -p "${RED}StorageOS CLI pod not found. Deploying now${NC}"
+    echo -e "${RED}StorageOS CLI pod not found. Deploying now${NC}"
 
     kubectl -n ${STOS_NS} run \
     --image ${CLI_VERSION} \
@@ -49,13 +49,14 @@ then
     -- /bin/sh -c "while true; do sleep 999999; done"
 fi
 
+sleep 5
 SECONDS=0
 TIMEOUT=30
-while ! kubectl get pod ${cli_pod} -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Running; do
-  pod_status=$(kubectl get pod ${cli_pod} -otemplate="{{ .status.phase }}" 2>/dev/null)
+while ! kubectl get pod cli -otemplate="{{ .status.phase }}" 2>/dev/null| grep -q Running; do
+  pod_status=$(kubectl get pod cli -otemplate="{{ .status.phase }}" 2>/dev/null)
   if [ $SECONDS -gt $TIMEOUT ]; then
-      echo "The pod ${cli_pod} didn't start after $TIMEOUT seconds" 1>&2
-      echo -e "${GREEN}Pod: ${pod}, is in ${pod_status}${NC} state."
+      echo "The pod cli didn't start after $TIMEOUT seconds" 1>&2
+      echo -e "${GREEN}Pod: cli, is in ${pod_status}${NC} state."
       exit 1
   fi
   sleep 5
