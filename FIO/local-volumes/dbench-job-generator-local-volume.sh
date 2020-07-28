@@ -87,6 +87,7 @@ metadata:
   name: pvc-${pvc_prefix}-0
   labels:
     storageos.com/hint.master: "${node_id}"
+    storageos.com/nocompress: "true"
 spec:
   storageClassName: fast
   accessModes:

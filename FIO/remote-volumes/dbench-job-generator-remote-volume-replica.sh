@@ -90,6 +90,7 @@ metadata:
   labels:
     storageos.com/hint.master: "${remote_node_name}"
     storageos.com/replicas: "1"
+    storageos.com/nocompress: "true"
 spec:
   storageClassName: fast
   accessModes:
