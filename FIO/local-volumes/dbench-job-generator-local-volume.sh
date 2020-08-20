@@ -44,8 +44,8 @@ then
     --image ${CLI_VERSION} \
     --restart=Never                          \
     --env STORAGEOS_ENDPOINTS=storageos:5705 \
-    --env STORAGEOS_USERNAME=storageos       \
-    --env STORAGEOS_PASSWORD=storageos       \
+    --env STORAGEOS_USERNAME=$(kubectl -n ${STOS_NS} get secrets init-secret -oyaml | awk '/username:/ {print $2}' |  base64 --decode) \
+    --env STORAGEOS_PASSWORD=$(kubectl -n ${STOS_NS} get secrets init-secret -oyaml | awk '/password:/ {print $2}' |  base64 --decode) \
     --command cli                            \
     -- /bin/sh -c "while true; do sleep 999999; done"
 fi
