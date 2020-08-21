@@ -148,4 +148,4 @@ spec:
       storageClassName: "fast" # StorageOS storageClass 
       resources:
         requests:
-          storage: 10Gi
+          storage: 50Gi
