@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+      env: prod
+  serviceName: mysql
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        backup.velero.io/backup-volumes: data
+        pre.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--freeze", "/var/lib/mysql"]'
+        pre.hook.backup.velero.io/container: fsfreeze
+        post.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--unfreeze", "/var/lib/mysql"]'
+        post.hook.backup.velero.io/container: fsfreeze
+        # pre.hook.backup.velero.io/command: "['/usr/bin/mysql', '-e', '\"flush tables with read lock;\"']"
+        # pre.hook.backup.velero.io/container: mysql
+        # post.hook.backup.velero.io/command: "['/usr/bin/mysql', '-e', '\"unlock tables;\"']"
+        # post.hook.backup.velero.io/container: mysql
+      labels:
+        app: mysql
+        env: prod
+    spec:
+      serviceAccountName: mysql
+      securityContext:
+        runAsUser: 0
+        fsGroup: 999
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "1"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/mysql.conf.d
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+      - name: fsfreeze
+        image: ubuntu:bionic
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/mysql
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "sleep infinity"
+      volumes:
+      - name: conf
+        configMap:
+          name: mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        env: prod
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "storageos-replicated" # StorageOS storageClass 
+      resources:
+        requests:
+          storage: 1Gi
