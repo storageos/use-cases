@@ -29,7 +29,7 @@ Here's the prerequisites for running Velero in your Kubernetes cluster:
 1. Kubernetes cluster version 1.13+ with DNS
 1. Kubectl installed
 1. Velero cli installed https://Velero.io/docs/main/basic-install/
-    * Velero can also be installed from a helm chart
+> Velero can also be installed from a helm chart
 
 ## Install MinIO with a StorageOS volume
 
@@ -45,7 +45,7 @@ the Velero directory:
 `minio-deploy.yaml` manifest file:
 
     ```bash
-    kubectl apply minio-deploy.yaml
+    kubectl apply minio
     ```
 
 1. Confirm that MinIO was deployed successfully:
@@ -55,10 +55,6 @@ the Velero directory:
     NAME                      READY   STATUS      RESTARTS   AGE
     minio-0                   1/1     Running     0          3m48s
     minio-setup-zvcdg         0/1     Completed   1          3m47s
-    restic-28wz8              1/1     Running     0          89s
-    restic-69brz              1/1     Running     0          89s
-    restic-l2xcv              1/1     Running     0          89s
-    velero-68f47744f5-msnl6   1/1     Running     0          89s
 
     ```
 
