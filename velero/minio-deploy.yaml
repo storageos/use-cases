@@ -66,24 +66,7 @@ spec:
       storageClassName: "fast" # StorageOS storageClass
       resources:
         requests:
-          storage: 10Gi
- 
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: velero
-  name: minio-node
-  labels:
-    component: minio
-spec:
-  type: NodePort
-  ports:
-    - port: 9000
-      targetPort: 9000
-      protocol: TCP
-  selector:
-    component: minio
+          storage: 50Gi
  
 ---
 apiVersion: v1

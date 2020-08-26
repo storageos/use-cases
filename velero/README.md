@@ -7,148 +7,204 @@ Velero consists of the following components:
 1. A CLI client
 1. A restic daemonset on the cluster
 
-In our case, we will use Minio in the Kubernetes cluster as the "cloud provider". Minio is an object store that uses the s3 API and as such can be used as our "cloud provider".
+In our case, we will use MinIO in the Kubernetes cluster as the "cloud
+provider" pictured in the backup diagram. MinIO is an object store that uses
+an S3 compatible API and as such can be used to store our backed up resources.
 
-We will set up Minio through a StatefulSet with a 10GiB StorageOS volume and a NodePort service. I included 2 services in the manifest, a ClusterIP and a NodePort. Using the NodePort, the UI can be accessed with a browser.
+We will set up MinIO through a StatefulSet with a 50GiB StorageOS volume and a
+ClusterIP service. The UI can be accessed with a browser by port-forwarding the
+MinIO service.
 
-Velero uses restic to backup Kubernetes volumes. Restic is a fast and secure backup program for file-systems whose documentation can be found [here](https://restic.readthedocs.io/en/latest/100_references.html). The way it works is that it scans the volume directory for its files and then splits those files into blobs which are then sent to minio. [Here's](https://velero.io/docs/main/restic/) how it integrates with Velero.
+Velero uses Restic to backup Kubernetes volumes. Restic is a fast and secure
+backup program for file-systems whose documentation can be found
+[here](https://restic.readthedocs.io/en/latest/100_references.html). The way it
+works is that it scans the volume directory for its files and then splits those
+files into blobs which are then sent to MinIO.
+[Here's](https://Velero.io/docs/main/restic/) how it integrates with Velero.
 
-# Prerequisites
+## Prerequisites
 
-Here's the prerequisites for running velero in your Kubernetes cluster:
+Here's the prerequisites for running Velero in your Kubernetes cluster:
 
-1. Kubernetes cluster version 1.10+ with DNS
-1. kubectl installed
+1. Kubernetes cluster version 1.13+ with DNS
+1. Kubectl installed
 1. Velero cli installed https://Velero.io/docs/main/basic-install/
-    1. Velero can also be installed from a helm chart
+    * Velero can also be installed from a helm chart
 
-# Install Minio with a StorageOS volume
+## Install MinIO with a StorageOS volume
 
-Installing Minio is really simple, just deploy it using the `minio-deploy.yaml` manifest file:
+1. First, make sure to clone the StorageOS use cases repository and navigate to
+the Velero directory:
 
-```bash
-kubectl apply minio-deploy.yaml
+    ```bash 
+    git clone https://github.com/storageos/use-cases.git 
+    cd use-cases/Velero
+    ```
+
+1. Installing MinIO is really simple, just deploy it using the
+`minio-deploy.yaml` manifest file:
+
+    ```bash
+    kubectl apply minio-deploy.yaml
+    ```
+
+1. Confirm that MinIO was deployed successfully:
+
+    ```bash
+    $ kubectl get pods -n velero
+    NAME                      READY   STATUS      RESTARTS   AGE
+    minio-0                   1/1     Running     0          3m48s
+    minio-setup-zvcdg         0/1     Completed   1          3m47s
+    restic-28wz8              1/1     Running     0          89s
+    restic-69brz              1/1     Running     0          89s
+    restic-l2xcv              1/1     Running     0          89s
+    velero-68f47744f5-msnl6   1/1     Running     0          89s
+
+    ```
+
+    You can access the web UI of MinIO by port-forwarding the MinIO service
+    with this command:
+
+    ```bash
+    kubectl port-forward service/minio -n velero 9000
+    ```
+
+## Install Velero
+
+Use the following command to install Velero via the Velero CLI or alternatively
+use the helm chart. To install it using the Velero cli, just run this command:
+
+> The aws plugin is being used because MinIO implements the S3 API. This is
+> required even if you're not using AWS.
+
+```bash 
+velero install                                                                                   \
+--provider aws                                                                                   \
+--plugins velero/velero-plugin-for-aws:v1.0.0                                                    \
+--bucket velero                                                                                  \
+--secret-file ./credentials-Velero                                                               \
+--use-volume-snapshots=false                                                                     \
+--backup-location-config region=minio,s3ForcePathStyle="true",s3Url=http://minio.velero.svc:9000 \
+--use-restic
 ```
 
-Confirm that Minio has deployed successfully:
+Make sure that Velero is installed correctly:
 
 ```bash
-kubectl get pods -n velero
+$ kubectl logs deployment/velero -n velero
+...
+time="2020-08-25T15:33:09Z" level=info msg="Server started successfully" logSource="pkg/cmd/server/server.go:881"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=restic-repository logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=restore logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=backup-sync logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=backup logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=backup-deletion logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Checking for expired DeleteBackupRequests" controller=backup-deletion logSource="pkg/controller/backup_deletion_controller.go:551"
+time="2020-08-25T15:33:09Z" level=info msg="Done checking for expired DeleteBackupRequests" controller=backup-deletion logSource="pkg/controller/backup_deletion_controller.go:579"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=schedule logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=downloadrequest logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=gc-controller logSource="pkg/controller/generic_controller.go:76"
+time="2020-08-25T15:33:09Z" level=info msg="Starting controller" controller=serverstatusrequest logSource="pkg/controller/generic_controller.go:76"
 ```
 
-You can also access the web UI of Minio using the node port.
-
-# Install Velero
-
-As mentioned earlier, velero can be install either with the velero cli or a helm chart. To install it using the velero cli, just run this command:
-
-```bash
-velero install \                                      
-     --provider aws \
-     --plugins velero/velero-plugin-for-aws:v1.0.0 \
-     --bucket velero \
-     --secret-file ./credentials-velero \
-     --use-volume-snapshots=false \
-     --backup-location-config region=minio,s3ForcePathStyle="true",s3Url=http://minio.velero.svc:9000 \
-     --use-restic
-```
-
-Make sure that velero is installed correctly:
-
-```bash
-kubectl logs deployment/velero -n velero
-```
-
-# Simple Debian pod use case
+## Simple Debian pod use case
 
 For the first use case, we'll just use a simple debian pod.
 
 1. Deploy the debian pod and its PVC:
 
-```bash
-kubectl apply -f debian
-```
+    ```bash
+    kubectl apply -f debian
+    ```
 
 1. Create a file with 'Hello World' in the pod.
 
-```bash
-kubectl exec -it d1 -- echo Hello World! > /mnt/hello
-kubectl exec -it d1 -- cat /mnt/hello
-```
+    ```bash
+    $ kubectl exec -it d1 -n debian -- sh -c 'echo Hello World! > /mnt/hello'
+    $ kubectl exec -it d1 -n debian -- cat /mnt/hello
+    Hello World!
+    ```
 
-1. Annotate pod to mark its volume for backup. This is need for restic to know which volume to backup:
+1. Annotate pod to mark its volume for backup. This is needed for Restic to
+know which volume to backup:
 
-```bash
-kubectl annotate pod/replicated-pod backup.velero.io/backup-volumes=v1
-```
+    ```bash
+    kubectl annotate pod/d1 -n debian backup.Velero.io/backup-volumes=v1 
+    ```
 
 1. Create a backup with Velero:
 
-```bash
-velero backup create debian-backup --include-namespaces debian --wait
-```
+    ```bash
+    velero backup create debian-backup --include-namespaces debian --wait
+    ```
 
-1. Confirm that all the Kubernetes objects are there and the restic backups completed successfully:
+1. Confirm that all the Kubernetes objects are there and the Restic backups
+completed successfully:
 
-```bash
-velero backup describe debian-backup --details
-```
+    ```bash
+    velero backup describe debian-backup --details
+    ```
 
 1. Delete the pod and PVC:
 
-```bash
-kubectl delete pod d1
-kubectl delete pvc pvc-1
-```
+    ```bash
+    kubectl delete pod d1 -n debian
+    kubectl delete pvc pvc-1 -n debian
+    ```
 
 1. Restore the pod using Velero:
 
-```bash
-velero restore create --from-backup debian-backup --wait
-```
+    ```bash
+    velero restore create --from-backup debian-backup --wait
+    ```
 
-1. Confirm that the hello world file is still in the pod:
+1. Confirm that the hello world file has been restored:
 
-```bash
-kubectl exec -it d1 -- cat /mnt/hello
-```
+    ```bash
+    $ kubectl exec -it d1 -n debian -- cat /mnt/hello
+    Hello World!
+    ```
 
 The pod was restored successfully!
 
-# Mysql use case
+## MySQL use case
 
-For the second use case, we'll use velero with a real world application, mysql.
+For the second use case, we'll use Velero with a real world application, MySQL.
 
-1. First deploy mysql, based on the mysql use case:
+1. First deploy MySQL, based on the MySQL use case:
 
-```bash
-kubectl apply -f mysql
-```
+    ```bash 
+    kubectl apply -f mysql 
+    ```
 
-Notice that the Statefulset also includes 5 annotations:
+    Notice that the Statefulset also includes 5 annotations:
 
-```yaml
-annotations:
-    backup.velero.io/backup-volumes: data
-    pre.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--freeze", "/var/lib/mysql"]'
-    pre.hook.backup.velero.io/container: fsfreeze
-    post.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--unfreeze", "/var/lib/mysql"]'
-    post.hook.backup.velero.io/container: fsfreeze
-```
+    ```yaml 
+    annotations:
+        backup.velero.io/backup-volumes: data
+        pre.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--freeze", "/var/lib/mysql"]'
+        pre.hook.backup.velero.io/container: fsfreeze
+        post.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--unfreeze", "/var/lib/mysql"]'
+        post.hook.backup.velero.io/container: fsfreeze
+    ```
 
-The first one is used to identify which volume to backup using restic, like we saw above. The rest do an fsfreeze on the volume mount point using the pre and post backup hook commands of velero, more details can be found [here](https://velero.io/docs/main/hooks/).
+The first annotation specifies which volume to backup using restic. The other
+annotations are used to perform an fsfreeze on the volume mount point using pre
+and post backup hooks, for more details about Velero pre/post backup hooks
+please see their documentation [here](https://Velero.io/docs/main/hooks/).
 
-There's also an fsfreeze ubuntu container since the mysql container doesn't support fsfreeze:
+We have to specify to use the `fsfreeze` ubuntu container since the MySQL
+container doesn't support fsfreeze
 
 ```yaml
 - name: fsfreeze
-  image: ubuntu:bionic
-  securityContext:
+image: ubuntu:bionic
+securityContext:
     privileged: true
-  volumeMounts:
+volumeMounts:
     - name: data
-      mountPath: /var/lib/mysql
-  command:
+    mountPath: /var/lib/mysql
+command:
     - "/bin/bash"
     - "-c"
     - "sleep infinity"
@@ -156,57 +212,82 @@ There's also an fsfreeze ubuntu container since the mysql container doesn't supp
 
 1. Wait for the pod to spin up:
 
-```bash
-kubectl get pods -n mysql
-```
+    ```bash 
+    $ kubectl get pods -n mysql
+    NAME      READY   STATUS    RESTARTS   AGE
+    client    1/1     Running   0          24m
+    mysql-0   2/2     Running   0          24m
+    ```
 
-1. Exec into the mysql pod and populate it with data using the `example.sql` file.
+1. Exec into the MySQL pod and populate it with data using the commands below.
 
-```bash
-kubectl exec mysql-0 -n mysql -ti -c mysql -- mysql
-create database shop;
-use shop;
-create table books (title VARCHAR(256), price decimal(4,2));
-insert into books value ('Gates of Fire', 13.99);
-select * from books;
-```
-1. Create the velero backup:
+    ```bash 
+    $ kubectl exec mysql-0 -n mysql -ti -c mysql -- mysql
+    mysql> create database shop;
+    mysql> use shop;
+    mysql> create table books (title VARCHAR(256), price decimal(4,2));
+    mysql> insert into books value ('Gates of Fire', 13.99);
+    mysql> select * from books;
+    +---------------+-------+
+    | title         | price |
+    +---------------+-------+
+    | Gates of Fire | 13.99 |
+    +---------------+-------+
+    1 row in set (0.00 sec)
+    mysql> exit
+    ```
 
-```bash
-velero backup create mysql-backup --include-namespaces mysql --wait
-```
+1. Create the Velero backup:
 
-1. Confirm that all the Kubernetes objects are there and the restic backups completed successfully:
+    ```bash 
+    velero backup create mysql-backup --include-namespaces mysql --wait
+    ```
 
-```bash
-velero backup describe mysql-backup --details
-```
+1. Confirm that all the Kubernetes objects are there and the restic backups
+completed successfully:
 
-1. After the backup is finished, delete the StatefulSet and PVC. NOTE: It's important to make sure that the overarching deployment/StatefulSet is deleted because the restore would be incomplete if the pod starts spinning up during the process.
+    ```bash 
+    velero backup describe mysql-backup --details
+    ```
 
-```bash
-kubectl delete statefulset mysql
-kubectl delete pvc data-mysql-0
-```
+1. After the backup is finished, delete the StatefulSet and PVC.
+
+    > N.B. It's important to make sure that the StatefulSet is deleted because the
+    > restore would be unable to complete if a StatefulSet pod is recreated during
+    > the restore process.
+
+    ```bash 
+    kubectl delete statefulset mysql -n mysql
+    kubectl delete pvc data-mysql-0 -n mysql
+    ```
 
 1. Make sure that the pod is fully terminated:
 
-```bash
-kubectl get pods -n mysql
-```
+    ```bash 
+    $ kubectl get pods -n mysql
+    NAME     READY   STATUS    RESTARTS   AGE
+    client   1/1     Running   0          25m
+    ```
 
-1. Restore mysql using velero:
+1. Restore MySQL using Velero:
 
-```bash
-velero restore create --from-backup mysql-backup
-```
+    ```bash
+    velero restore create --from-backup mysql-backup --wait
+    ```
 
-1. Wait for the mysql pod to spin up and see if the data is backed up:
+1. Wait for the MySQL pod to spin up and see if the data is backed up:
 
-```bash
-kubectl exec mysql-0 -n mysql -ti -c mysql -- mysql
-use shop;
-select * from books;
-```
+    ```bash
+    $ kubectl exec mysql-0 -n mysql -ti -c mysql -- mysql 
+    mysql> use shop; 
+    mysql> select * from books;
+    +---------------+-------+
+    | title         | price |
+    +---------------+-------+
+    | Gates of Fire | 13.99 |
+    +---------------+-------+
+    1 row in set (0.00 sec)
+    mysql> exit
+    ```
 
 The data should be there and the backup was restored successfully!
