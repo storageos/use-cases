@@ -45,7 +45,7 @@ the Velero directory:
 `minio-deploy.yaml` manifest file:
 
     ```bash
-    kubectl apply minio
+    kubectl apply ./minio
     ```
 
 1. Confirm that MinIO was deployed successfully:
@@ -110,7 +110,7 @@ For the first use case, we'll just use a simple debian pod.
 1. Deploy the debian pod and its PVC:
 
     ```bash
-    kubectl apply -f debian
+    kubectl apply -f ./debian
     ```
 
 1. Create a file with 'Hello World' in the pod.
@@ -170,7 +170,7 @@ For the second use case, we'll use Velero with a real world application, MySQL.
 1. First deploy MySQL, based on the MySQL use case:
 
     ```bash 
-    kubectl apply -f mysql 
+    kubectl apply -f ./mysql 
     ```
 
     Notice that the Statefulset also includes 5 annotations:
@@ -184,27 +184,27 @@ For the second use case, we'll use Velero with a real world application, MySQL.
         post.hook.backup.velero.io/container: fsfreeze
     ```
 
-The first annotation specifies which volume to backup using restic. The other
-annotations are used to perform an fsfreeze on the volume mount point using pre
-and post backup hooks, for more details about Velero pre/post backup hooks
-please see their documentation [here](https://Velero.io/docs/main/hooks/).
+    The first annotation specifies which volume to backup using restic. The other
+    annotations are used to perform an fsfreeze on the volume mount point using pre
+    and post backup hooks, for more details about Velero pre/post backup hooks
+    please see their documentation [here](https://Velero.io/docs/main/hooks/).
 
-We have to specify to use the `fsfreeze` ubuntu container since the MySQL
-container doesn't support fsfreeze
+    We have to specify to use the `fsfreeze` ubuntu container since the MySQL
+    container doesn't support fsfreeze
 
-```yaml
-- name: fsfreeze
-image: ubuntu:bionic
-securityContext:
-    privileged: true
-volumeMounts:
-    - name: data
-    mountPath: /var/lib/mysql
-command:
-    - "/bin/bash"
-    - "-c"
-    - "sleep infinity"
-```
+    ```yaml
+    - name: fsfreeze
+    image: ubuntu:bionic
+    securityContext:
+        privileged: true
+    volumeMounts:
+        - name: data
+        mountPath: /var/lib/mysql
+    command:
+        - "/bin/bash"
+        - "-c"
+        - "sleep infinity"
+    ```
 
 1. Wait for the pod to spin up:
 
