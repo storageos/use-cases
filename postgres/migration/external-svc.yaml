@@ -20,7 +20,7 @@ metadata:
     app: postgres
 subsets:
 - addresses:
-  - ip: 10.154.0.46
+  - ip: 178.79.129.52
   ports:
   - name: postgres
     port: 5432
