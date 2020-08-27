@@ -16,7 +16,7 @@ ClusterIP service. The UI can be accessed through the browser by port-forwarding
 MinIO service.
 
 Velero uses Restic to backup Kubernetes volumes. Restic is a fast and secure
-backup program for file-systems whose documentation can be found
+backup program for filesystems whose documentation can be found
 [here](https://restic.readthedocs.io/en/latest/100_references.html). The way it
 works is that it scans the volume directory for its files and then splits those
 files into blobs which are then sent to MinIO.
