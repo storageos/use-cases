@@ -3,16 +3,16 @@
 Velero is an open source tool to safely backup and restore, perform disaster recovery, and migrate Kubernetes cluster resources and persistent volumes.
 
 Velero consists of the following components:
-1. A velero Server on the cluster
+1. A velero Server in the cluster
 1. A CLI client
-1. A restic daemonset on the cluster
+1. A restic daemonset in the cluster
 
 In our case, we will use MinIO in the Kubernetes cluster as the "cloud
 provider" pictured in the backup diagram. MinIO is an object store that uses
 an S3 compatible API and as such can be used to store our backed up resources.
 
 We will set up MinIO through a StatefulSet with a 50GiB StorageOS volume and a
-ClusterIP service. The UI can be accessed with a browser by port-forwarding the
+ClusterIP service. The UI can be accessed through the browser by port-forwarding the
 MinIO service.
 
 Velero uses Restic to backup Kubernetes volumes. Restic is a fast and secure
@@ -24,7 +24,7 @@ files into blobs which are then sent to MinIO.
 
 ## Prerequisites
 
-Here's the prerequisites for running Velero in your Kubernetes cluster:
+Here are the prerequisites for running Velero in your Kubernetes cluster:
 
 1. Kubernetes cluster version 1.13+ with DNS
 1. Kubectl installed
@@ -70,7 +70,7 @@ the Velero directory:
 Use the following command to install Velero via the Velero CLI or alternatively
 use the helm chart. To install it using the Velero cli, just run this command:
 
-> The aws plugin is being used because MinIO implements the S3 API. This is
+> The AWS plugin is being used because MinIO implements the S3 API. This is
 > required even if you're not using AWS.
 
 ```bash 
