@@ -50,7 +50,7 @@ spec:
             cpu: 500m
             memory: 1Gi
       - name: fsfreeze
-        image: ubuntu:bionic
+        image: debian:9-slim
         securityContext:
           privileged: true
         volumeMounts:
@@ -71,7 +71,7 @@ spec:
         env: prod
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: "storageos-replicated" # StorageOS storageClass 
+      storageClassName: "fast" # StorageOS storageClass 
       resources:
         requests:
           storage: 1Gi

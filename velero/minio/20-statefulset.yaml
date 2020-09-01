@@ -26,7 +26,7 @@ spec:
         fsGroup: 999
       containers:
       - name: minio
-        image: minio/minio:latest
+        image: minio/minio@sha256:a8213a7c2d7a05813bdee6306886fd09378b516f11ef47022c95073add80d4ef
         imagePullPolicy: IfNotPresent
         args:
         - server
