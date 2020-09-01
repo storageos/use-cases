@@ -13,7 +13,6 @@ spec:
       app: jenkins
       component: jenkins-master
       storageos.com/replicas: "1"
-      storageos.com/fenced: "true"
   serviceName: jenkins
   template:
     metadata:
@@ -21,7 +20,6 @@ spec:
         app: jenkins
         component: jenkins-master
         storageos.com/replicas: "1"
-        storageos.com/fenced: "true"
     spec:
       securityContext:
         runAsUser: 1000
