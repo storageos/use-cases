@@ -194,16 +194,16 @@ For the second use case, we'll use Velero with a real world application, MySQL.
 
     ```yaml
     - name: fsfreeze
-    image: ubuntu:bionic
-    securityContext:
-        privileged: true
-    volumeMounts:
-        - name: data
-        mountPath: /var/lib/mysql
-    command:
-        - "/bin/bash"
-        - "-c"
-        - "sleep infinity"
+      image: ubuntu:bionic
+      securityContext:
+          privileged: true
+      volumeMounts:
+          - name: data
+          mountPath: /var/lib/mysql
+      command:
+          - "/bin/bash"
+          - "-c"
+          - "sleep infinity"
     ```
 
 1. Wait for the pod to spin up:
