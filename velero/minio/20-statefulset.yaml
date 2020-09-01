@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: velero
+  name: minio
+  labels:
+    component: minio
+spec:
+  selector:
+    matchLabels:
+      component: minio
+  serviceName: minio
+  template:
+    metadata:
+      labels:
+        component: minio
+    spec:
+      volumes:
+      - name: storage
+        emptyDir: {}
+      - name: config
+        emptyDir: {}
+      securityContext:
+        runAsUser: 0
+        fsGroup: 999
+      containers:
+      - name: minio
+        image: minio/minio@sha256:a8213a7c2d7a05813bdee6306886fd09378b516f11ef47022c95073add80d4ef
+        imagePullPolicy: IfNotPresent
+        args:
+        - server
+        - /storage
+        - --config-dir=/config
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: "minio"
+        - name: MINIO_SECRET_KEY
+          value: "minio123"
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - name: storage
+          mountPath: "/storage"
+        - name: config
+          mountPath: "/config"
+  volumeClaimTemplates:
+  - metadata:
+      name: storage
+      labels:
+        env: prod
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "fast" # StorageOS storageClass
+      resources:
+        requests:
+          storage: 50Gi
+ 
