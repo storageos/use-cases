@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-migration
+  labels:
+    app: mysql
+data:
+    DB: app
+    USER: demo
+    PASS: demo
+    #     svcname.namespace
+    SRC: "mysql.mysql-external"
+    #     podname.servicename[.namespace]
+    DST: "mysql-0.mysql"

@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: populate-db
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: mysql
+      restartPolicy: Never
+      containers:
+      - name: mysql-import
+        image: mysql:5.7
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - "mysql -h $DST -e \"CREATE DATABASE $DB\";
+          mysqldump -v -u$USER -p$PASS -h $SRC $DB | mysql -v -h $DST $DB"
+        envFrom:
+        - configMapRef:
+            name: mysql-migration
