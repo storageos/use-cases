@@ -1,0 +1,94 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: "2020-09-16T15:14:52Z"
+    generation: 1
+    name: influx
+    namespace: default
+    resourceVersion: "6420"
+    selfLink: /apis/apps/v1/namespaces/default/statefulsets/influx
+    uid: d306debf-d772-43ee-8341-6c9d250ed904
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: influx
+    serviceName: influx
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: influx
+      spec:
+        serviceAccountName: influxdb
+        containers:
+        - image: influxdb:1.8.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: api
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: influx
+          env:
+          - name: INFLUXDB_ADMIN_USER
+            value: admin
+          - name: INFLUXDB_ADMIN_PASSWORD
+            value: admin
+          ports:
+          - containerPort: 8086
+            name: api
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/influxdb
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        creationTimestamp: null
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: fast
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  status:
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: influx-6fc8f67b75
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: influx-6fc8f67b75
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
