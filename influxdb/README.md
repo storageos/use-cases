@@ -20,7 +20,7 @@ $ kubectl create -f ./influxdb
 Once this is done you can check that an InfluxDB pod is running.
 
 ```bash
-$ kubectl get pods -w -l app=influxdb
+$ kubectl get pods
    NAME        READY    STATUS    RESTARTS    AGE
    client      1/1      Running    0          1m
    influxdb-0     1/1      Running    0          1m
@@ -30,9 +30,18 @@ Connect to the InfluxDB client pod and connect to the InfluxDB server through th
 service.
 
 ```bash
-$ kubectl exec -it client -- influxdb -host influxdb-0.influxdb -username admin
+$ kubectl exec -it client -- bash
+root@client:/# influx -host influxdb-0.influxdb
 Connected to http://influxdb-0.influxdb:8086 version 1.8.2
 InfluxDB shell version: 1.8.2
+> auth
+username: admin
+password: 
+> show databases
+name: databases
+name
+----
+_internal
 > CREATE DATABASE weather;
 > USE weather
 Using database weather
