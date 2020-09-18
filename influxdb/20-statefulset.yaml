@@ -2,11 +2,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: influx
-  namespace: default
 spec:
-  podManagementPolicy: OrderedReady
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: influx
@@ -16,56 +13,34 @@ spec:
       labels:
         app: influx
     spec:
+      serviceAccountName: influxdb
       containers:
-      - env:
+      - name: influx
+        image: influxdb:1.8.2
+        env:
         - name: INFLUXDB_ADMIN_USER
           value: admin
         - name: INFLUXDB_ADMIN_PASSWORD
           value: admin
-        image: influxdb:1.8.2
-        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8086
+          name: api
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/influxdb
+          name: data
         livenessProbe:
           failureThreshold: 3
           httpGet:
             path: /ping
             port: api
             scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 5
-        name: influx
-        ports:
-        - containerPort: 8086
-          name: api
-          protocol: TCP
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /var/lib/influxdb
-          name: data
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      serviceAccount: influxdb
-      serviceAccountName: influxdb
-      terminationGracePeriodSeconds: 30
-  updateStrategy:
-    rollingUpdate:
-      partition: 0
-    type: RollingUpdate
   volumeClaimTemplates:
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
+  - metadata:
       name: data
     spec:
-      accessModes:
-      - ReadWriteOnce
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "fast" # StorageOS storageClass
       resources:
         requests:
-          storage: 5Gi
-      storageClassName: fast
-      volumeMode: Filesystem
+          storage: 20Gi
