@@ -11,4 +11,4 @@ spec:
     protocol: TCP
     targetPort: 8086
   selector:
-    run: influx
+    app: influx
