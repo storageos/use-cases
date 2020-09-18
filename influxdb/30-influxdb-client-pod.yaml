@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: client
   labels:
-    app: influxdb
+    app: influxdb-client
 spec:
   containers:
     - name: influxdb-client

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: influx
+  name: influxdb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: influx
-  serviceName: influx
+      app: influxdb
+  serviceName: influxdb
   template:
     metadata:
       labels:
-        app: influx
+        app: influxdb
     spec:
-      serviceAccountName: influxdb
+      serviceAccountName: influxdbdb
       containers:
-      - name: influx
-        image: influxdb:1.8.2
+      - name: influxdb
+        image: influxdbdb:1.8.2
         env:
         - name: INFLUXDB_ADMIN_USER
           value: admin
@@ -27,10 +27,9 @@ spec:
           name: api
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/influxdb
+        - mountPath: /var/lib/influxdbdb
           name: data
         livenessProbe:
-          failureThreshold: 3
           httpGet:
             path: /ping
             port: api
