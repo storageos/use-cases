@@ -46,10 +46,24 @@ _internal
 > USE weather
 Using database weather
 > INSERT temperature,location=London value=26.4
-> SHOW MEASUREMENTS
-name: measurements
-name
-----
-temperature
+> INSERT temperature,location=London value=24.9
+> INSERT temperature,location=London value=22.2
+> INSERT temperature,location=London value=14.7
+> INSERT temperature,location=London value=19.5
+> INSERT temperature,location=Paris value=27.1
+> INSERT temperature,location=Paris value=27.5
+> INSERT temperature,location=Paris value=21.3
+> INSERT temperature,location=Paris value=26.7
+> INSERT temperature,location=Paris value=30.0
+> SELECT MEAN(*) FROM "temperature" WHERE "location"='Paris'
+name: temperature
+time mean_value
+---- ----------
+0    26.520000000000003
+> SELECT MEAN(*) FROM "temperature" WHERE "location"='London'
+name: temperature
+time mean_value
+---- ----------
+0    21.54
 ```
 
