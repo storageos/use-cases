@@ -24,6 +24,8 @@ spec:
           value: admin
         - name: INFLUXDB_HTTP_AUTH_ENABLED
           value: "true" 
+        - name: INFLUXDB_BIND_ADDRESS
+          value: 0.0.0.0:8088
         ports:
         - containerPort: 8086
           name: api
