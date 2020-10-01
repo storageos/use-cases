@@ -30,8 +30,8 @@ Connect to the InfluxDB client pod and connect to the InfluxDB server through th
 service.
 
 ```bash
-$ kubectl exec -it client -- bash
-root@client:/# influx -host influxdb-0.influxdb
+$ kubectl exec -it influxdb-client -- bash
+root@influxdb-client:/# influx -host influxdb-0.influxdb
 Connected to http://influxdb-0.influxdb:8086 version 1.8.2
 InfluxDB shell version: 1.8.2
 > auth
