@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: influxdb-client
+  labels:
+    app: influxdb-client
+spec:
+  containers:
+    - name: influxdb-client
+      image: influxdb:1.8.2
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - "while true; do sleep 3600; done"

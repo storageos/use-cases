@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-aws
+        image: influxdb:1.8.2
+        volumeMounts:
+        - name: aws-binaries
+          mountPath: /opt
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - "apt-get update && apt-get install unzip && curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' && unzip awscliv2.zip && ./aws/install --install-dir /opt/ --bin-dir /opt/"
+      containers:
+      - name: influxdb-backup
+        image: influxdb:1.8.2
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: backup-pod-environment
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backup-pod-environment
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_DEFAULT_REGION
+          valueFrom:
+            secretKeyRef:
+              name: backup-pod-environment
+              key: AWS_DEFAULT_REGION
+        - name: BUCKET_NAME
+          valueFrom: 
+            secretKeyRef:
+              name: backup-pod-environment
+              key: BUCKET_NAME
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: backup-pod-environment
+              key: DB_NAME
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: backup-pod-environment
+              key: DB_HOST
+        volumeMounts:
+        - name: aws-binaries
+          mountPath: /opt
+        command: ["/bin/sh"]
+        args:
+          - "-c"
+          - "influxd backup -portable -database $DB_NAME -host $DB_HOST /tmp/mysnapshot && ./opt/aws s3 cp /tmp/mysnapshot/ s3://$BUCKET_NAME/backups --recursive"
+      volumes:
+      - name: aws-binaries
+        emptyDir: {}
+      restartPolicy: Never
+  backoffLimit: 0
