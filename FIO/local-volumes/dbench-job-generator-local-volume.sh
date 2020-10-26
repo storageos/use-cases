@@ -32,7 +32,7 @@ then
 fi
 
 # Checking if StorageOS Cli is running as a pod, if not the script will deploy it
-CLI_VERSION="storageos/cli:v2.2.0"
+CLI_VERSION="storageos/cli:v2.3.0"
 STOS_NS="kube-system"
 cli_pod=$(kubectl -n ${STOS_NS} get pod -lrun=cli --no-headers -ocustom-columns=_:.metadata.name)
 
