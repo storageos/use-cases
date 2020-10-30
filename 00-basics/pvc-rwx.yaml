@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-rwx
+spec:
+  storageClassName: fast
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
